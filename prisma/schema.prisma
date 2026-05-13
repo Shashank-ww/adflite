@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+
+  name          String?
+  email         String   @unique
+  image         String?
+
+  headline      String?
+  bio           String?
+
+  location      String?
+
+  skills        String[]
+
+  createdAt     DateTime @default(now())
+
+  projects      Project[]
+
+  messages      Message[]
+
+  applications  Application[]
+}
+
+model Project {
+  id            String   @id @default(cuid())
+
+  title         String
+  description   String
+
+  budget        String?
+  timeline      String?
+
+  category      String?
+
+  location      String?
+
+  createdAt     DateTime @default(now())
+
+  userId        String
+  user          User @relation(fields: [userId], references: [id])
+
+  applications  Application[]
+
+  messages      Message[]
+}
+
+model Application {
+  id            String   @id @default(cuid())
+
+  pitch         String?
+
+  createdAt     DateTime @default(now())
+
+  userId        String
+  projectId     String
+
+  user          User @relation(fields: [userId], references: [id])
+
+  project       Project @relation(fields: [projectId], references: [id])
+}
+
+model Message {
+  id            String   @id @default(cuid())
+
+  text          String
+
+  createdAt     DateTime @default(now())
+
+  userId        String
+  projectId     String
+
+  user          User @relation(fields: [userId], references: [id])
+
+  project       Project @relation(fields: [projectId], references: [id])
+}
