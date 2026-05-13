@@ -50,13 +50,13 @@ export default async function ProjectCard({
     project.user.email;
 
   return (
-    <article className="border-t border-gray-300 bg-white p-5">
+    <article className="w-full border-t border-gray-300 bg-white p-5">
 
       {/* TOP */}
 
       <div className="flex items-start justify-between gap-6">
 
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
 
           <Link
             href={`/projects/${project.slug}`}

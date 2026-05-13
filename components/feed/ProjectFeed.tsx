@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import ProjectCard from "../cards/ProjectCard";
 
 import SearchStrip from "./SearchStrip";
+import FeedIntro from "./FeedIntro";
 
 type Props = {
   query?: string;
@@ -52,11 +53,13 @@ export default async function ProjectFeed({
     });
 
   return (
-    <section className="overflow-hidden border border-gray-200 bg-white">
+    <section className="w-full overflow-hidden border border-gray-200 bg-white">
+
+      <FeedIntro/>
 
       <SearchStrip />
 
-      <div className="flex flex-col">
+      <div className="w-full flex flex-col">
 
         {projects.length > 0 ? (
           projects.map((project) => (
