@@ -1,9 +1,12 @@
+import AuthProvider from "@/components/providers/SessionProvider";
 import "./globals.css";
 import type { Metadata } from "next";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Worklane",
-  description: "Micro project marketplace",
+  title: "adflite",
+  description: "classifieds for internet",
 };
 
 export default function RootLayout({
@@ -13,7 +16,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+
+      <AuthProvider>
+
+        <Header />
+
+          <main className="min-h-screen">
+            {children}
+          </main>
+
+        <Footer />
+
+      </AuthProvider>
+        
+      </body>
     </html>
   );
 }

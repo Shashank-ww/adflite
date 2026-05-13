@@ -1,46 +1,80 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { prisma } from "@/lib/prisma";
 
 import ProjectCard from "../cards/ProjectCard";
+
 import SearchStrip from "./SearchStrip";
 
-import { Project } from "@/types/project";
+type Props = {
+  query?: string;
+};
 
-import { getProjects } from "@/lib/storage";
+export default async function ProjectFeed({
+  query,
+}: Props) {
+  const projects =
+    await prisma.project.findMany({
+      where: query
+        ? {
+            OR: [
+              {
+                title: {
+                  contains: query,
+                  mode: "insensitive",
+                },
+              },
 
-import { projects as defaultProjects } from "@/data/defaultProjects";
+              {
+                description: {
+                  contains: query,
+                  mode: "insensitive",
+                },
+              },
 
-export default function ProjectFeed() {
-  const [projects, setProjects] = useState<Project[]>([]);
+              {
+                category: {
+                  contains: query,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : undefined,
 
-  useEffect(() => {
-    const stored = getProjects();
+      include: {
+        user: true,
 
-    if (stored.length > 0) {
-      setProjects(stored);
-    } else {
-      localStorage.setItem(
-        "adflite_projects",
-        JSON.stringify(defaultProjects)
-      );
+        pings: true,
+      },
 
-      setProjects(defaultProjects);
-    }
-  }, []);
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
   return (
-    <section className="flex-1 border border-gray-300 bg-white">
+    <section className="overflow-hidden border border-gray-200 bg-white">
+
       <SearchStrip />
 
       <div className="flex flex-col">
-        {projects.map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-          />
-        ))}
+
+        {projects.length > 0 ? (
+          projects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+            />
+          ))
+        ) : (
+          <div className="p-10 text-center text-sm text-gray-500">
+
+            no listings found
+
+          </div>
+        )}
+
       </div>
+
     </section>
   );
 }

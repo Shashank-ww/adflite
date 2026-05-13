@@ -12,8 +12,7 @@ export default function Footer() {
         </div>
 
         <p>
-          adflite, a classified internet for marketers, adops,
-          and creators.
+          adflite, an internet classified for marketers, adops, and creators.
         </p>
       </div>
     </footer>
