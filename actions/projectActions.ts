@@ -4,7 +4,7 @@ import {slugify} from "@/lib/slugify";
 
 import { prisma } from "@/lib/prisma";
 
-import { authOptions } from "@/auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import { getServerSession } from "next-auth";
 
@@ -88,6 +88,72 @@ export async function createProject(
 
 
 /* =========================
+   SAVE PROJECT
+========================= */
+
+export async function saveProject(projectId: string) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user.email,
+    },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const existing =
+    await prisma.savedProject.findUnique({
+      where: {
+        userId_projectId: {
+          userId: user.id,
+          projectId,
+        },
+      },
+    });
+
+  // UNSAVE
+  if (existing) {
+    await prisma.savedProject.delete({
+      where: {
+        userId_projectId: {
+          userId: user.id,
+          projectId,
+        },
+      },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/saved");
+
+    return {
+      status: "unsaved",
+    };
+  }
+
+  // SAVE
+  await prisma.savedProject.create({
+    data: {
+      userId: user.id,
+      projectId,
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/saved");
+
+  return {
+    status: "saved",
+  };
+}
+
+/* =========================
    UPDATE PROJECT
 ========================= */
 
@@ -132,47 +198,51 @@ export async function updateProject(
     throw new Error("Forbidden");
   }
 
-  await prisma.project.update({
-    where: {
-      id: projectId,
-    },
+  const updatedProject =
+    await prisma.project.update({
+      where: {
+        id: projectId,
+      },
 
-    data: {
-      title:
-        formData.get("title") as string,
+      data: {
+        title:
+          formData.get("title") as string,
 
-      description:
-        formData.get(
-          "description"
-        ) as string,
+        description:
+          formData.get(
+            "description"
+          ) as string,
 
-      budget:
-        formData.get("budget") as string,
+        budget:
+          formData.get("budget") as string,
 
-      timeline:
-        formData.get(
-          "timeline"
-        ) as string,
+        timeline:
+          formData.get(
+            "timeline"
+          ) as string,
 
-      category:
-        formData.get(
-          "category"
-        ) as string,
+        category:
+          formData.get(
+            "category"
+          ) as string,
 
-      location:
-        formData.get(
-          "location"
-        ) as string,
-    },
-  });
+        location:
+          formData.get(
+            "location"
+          ) as string,
+      },
+    });
 
   revalidatePath("/");
   revalidatePath("/profile");
+
   revalidatePath(
-    `/projects/${projectId}`
+    `/projects/${updatedProject.slug}`
   );
 
-  redirect(`/projects/${projectId}`);
+  redirect(
+    `/projects/${updatedProject.slug}`
+  );
 }
 
 /* =========================
@@ -225,3 +295,4 @@ export async function deleteProject(
 
   redirect("/");
 }
+

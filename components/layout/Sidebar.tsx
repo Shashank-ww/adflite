@@ -4,7 +4,7 @@ export default function Sidebar() {
   return (
     <aside className="hidden w-56 shrink-0 md:block">
 
-      <div className="border border-gray-300 bg-white p-4 text-sm">
+      <div className="sticky top-4 border border-gray-300 bg-white p-4 text-sm">
 
         {/* BROWSE */}
 

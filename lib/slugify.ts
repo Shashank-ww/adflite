@@ -1,6 +1,13 @@
 export function slugify(
-text: string, p0: { lower: boolean; strict: boolean; trim: boolean; }) {
-  return text
+  text: string,
+  options?: any
+) {
+  const shortText = text
+    .split(" ")
+    .slice(0, 5)
+    .join(" ");
+
+  return shortText
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, "")

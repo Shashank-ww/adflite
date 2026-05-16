@@ -2,11 +2,12 @@
 
 import { prisma } from "@/lib/prisma";
 
-import { authOptions } from "@/auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import { getServerSession } from "next-auth";
 
 import { revalidatePath } from "next/cache";
+
 import { redirect } from "next/navigation";
 
 export async function updateProfile(
@@ -18,6 +19,25 @@ export async function updateProfile(
   if (!session?.user?.email) {
     throw new Error("Unauthorized");
   }
+
+  // LANGUAGES
+  const languages = (
+    formData.getAll(
+      "languages"
+    ) as string[]
+  )
+    .map((item) =>
+      item.trim().toLowerCase()
+    )
+    .filter(Boolean);
+
+  // SKILLS
+  const skills = (
+    formData.get("skills") as string
+  )
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
 
   await prisma.user.update({
     where: {
@@ -42,24 +62,30 @@ export async function updateProfile(
         ) as string,
 
       status:
-      formData.get("status") as string,
+        formData.get(
+          "status"
+        ) as string,
 
       hourlyRate:
-      formData.get("hourlyRate") as string,
+        formData.get(
+          "hourlyRate"
+        ) as string,
 
-      experience: Number(
-      formData.get("experience")
-      ),
+      experience: formData.get("experience")
+        ? Number(
+            formData.get("experience")
+          )
+        : null,
 
-      languages: (
-      formData.get("languages") as string
-      )
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean),
+      languages,
+
+      skills,
     },
   });
 
-  revalidatePath("/profile");
+  revalidatePath("/");
+
+  revalidatePath("/profile/onboarding");
+
   redirect("/profile");
 }

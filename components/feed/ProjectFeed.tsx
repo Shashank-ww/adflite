@@ -1,3 +1,7 @@
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 import { prisma } from "@/lib/prisma";
 
 import ProjectCard from "../cards/ProjectCard";
@@ -12,6 +16,12 @@ type Props = {
 export default async function ProjectFeed({
   query,
 }: Props) {
+
+  // SESSION
+  const session =
+    await getServerSession(authOptions);
+
+  // PROJECTS
   const projects =
     await prisma.project.findMany({
       where: query
@@ -23,14 +33,12 @@ export default async function ProjectFeed({
                   mode: "insensitive",
                 },
               },
-
               {
                 description: {
                   contains: query,
                   mode: "insensitive",
                 },
               },
-
               {
                 category: {
                   contains: query,
@@ -43,8 +51,9 @@ export default async function ProjectFeed({
 
       include: {
         user: true,
-
         pings: true,
+        savedProjects: true,
+        applications: true,
       },
 
       orderBy: {
@@ -52,20 +61,38 @@ export default async function ProjectFeed({
       },
     });
 
+    console.log(
+  "SESSION USER ID:",
+  session?.user?.id
+);
+
+console.log(
+  "FIRST PROJECT SAVES:",
+  projects[0]?.savedProjects
+);
+
   return (
     <section className="w-full overflow-hidden border border-gray-200 bg-white">
 
-      <FeedIntro/>
+      <FeedIntro />
 
       <SearchStrip />
 
-      <div className="w-full flex flex-col">
+      <div className="flex w-full flex-col">
 
         {projects.length > 0 ? (
           projects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
+
+              sessionUserId={
+                session?.user?.id ?? null
+              }
+
+              sessionUserEmail={
+                session?.user?.email ?? null
+              }
             />
           ))
         ) : (

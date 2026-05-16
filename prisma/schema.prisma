@@ -79,9 +79,11 @@ model Project {
 model Application {
   id String @id @default(cuid())
 
-  pitch String?
-
   createdAt DateTime @default(now())
+
+  email  String
+  resume String
+  phone  String?
 
   userId    String
   projectId String
@@ -95,6 +97,8 @@ model Message {
   id String @id @default(cuid())
 
   text String
+
+  seen Boolean @default(false)
 
   createdAt DateTime @default(now())
 

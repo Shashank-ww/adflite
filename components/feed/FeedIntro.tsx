@@ -4,63 +4,75 @@ import Link from "next/link";
 
 import { prisma } from "@/lib/prisma";
 
+import FeedIntroActions from "./FeedIntroActions";
+
 export default async function FeedIntro() {
+
   const totalProjects =
     await prisma.project.count();
 
   return (
-    <section className="border border-gray-300 bg-white p-4">
+    <section className="border border-gray-300 bg-blue-50 p-4 sm:p-6">
 
-      <div className="flex items-start justify-between gap-6">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 
         {/* LEFT */}
 
         <div className="max-w-2xl">
 
-          <h1 className="text-lg font-bold">
-            adflite listings
+          <h1 className="text-2xl font-bold leading-tight text-blue-950 sm:text-3xl">
+
+            internet workboard for media marketing
+
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-gray-700">
+          <p className="mt-3 text-sm leading-6 text-blue-900">
 
-            A focused hiring board for
-            marketers, media buyers,
-            ad-ops specialists, editors,
-            designers, strategists and
-            creative operators.
+            Find freelance gigs, contract work,
+            creative collaborations and growth roles
+            across media, advertising and digital teams.
+
+            <span className="mt-2 block">
+
+              Built for operators, marketers,
+              buyers, editors, strategists,
+              creators and internet talent.
+
+            </span>
 
           </p>
 
-          <div className="mt-4 flex items-center gap-4 text-sm">
-
-            <Link
-              href="/post"
-              className="hover:underline"
-            >
-              + post a listing
-            </Link>
-
-            <Link
-              href="/projects"
-              className="hover:underline"
-            >
-              browse projects
-            </Link>
-
-          </div>
+          <FeedIntroActions />
 
         </div>
 
         {/* RIGHT */}
 
-        <div className="shrink-0 border border-gray-300 px-5 py-4 text-center">
+        <div
+          className="
+            w-full shrink-0
 
-          <p className="text-2xl font-bold">
-            {totalProjects}
+            border border-blue-200
+            bg-white
+
+            px-5 py-4
+
+            text-center
+
+            sm:w-auto
+          "
+        >
+
+          <p className="text-3xl font-bold text-blue-950">
+
+            {totalProjects}+
+
           </p>
 
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs uppercase tracking-wide text-blue-700">
+
             active listings
+
           </p>
 
         </div>

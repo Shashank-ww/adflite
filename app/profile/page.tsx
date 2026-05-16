@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import { prisma } from "@/lib/prisma";
 
@@ -23,7 +23,11 @@ export default async function ProfilePage() {
       },
 
       include: {
-        projects: true,
+        projects: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
 
@@ -62,12 +66,13 @@ export default async function ProfilePage() {
 
           <div>
 
-            <h1 className="text-2xl font-bold">
-
-              {user.name ||
-                "anonymous internet marketer"}
-
-            </h1>
+              {user.headline && (
+                <p className="mt-3 text-2xl font-bold leading-6">
+  
+                  {user.headline}
+  
+                </p>
+              )}
 
             <p className="mt-2 text-sm text-gray-500">
 
@@ -76,13 +81,6 @@ export default async function ProfilePage() {
 
             </p>
 
-            {user.headline && (
-              <p className="mt-3 text-sm leading-6">
-
-                {user.headline}
-
-              </p>
-            )}
 
             {user.status && (
               <p className="mt-2 text-xs text-gray-500">
@@ -92,13 +90,22 @@ export default async function ProfilePage() {
 
           </div>
 
+            <div className="flex flex-col items-end justify-end gap-2">
           {user.image && (
             <img
               src={user.image}
               alt={user.name || "user"}
-              className="h-16 w-16 rounded-full border border-gray-300"
+              className="h-16 w-16 rounded-full justify-end border border-gray-300"
             />
           )}
+
+            <h1 className="text-xl font-bold">
+
+              {user.name ||
+                "anonymous being"}
+
+            </h1>
+            </div>
 
         </div>
 
@@ -218,7 +225,7 @@ export default async function ProfilePage() {
               user.projects.map((project) => (
                 <Link
                   key={project.id}
-                  href={`/projects/${project.id}`}
+                  href={`/projects/${project.slug}`}
                   className="border border-gray-300 p-3 hover:bg-gray-50"
                 >
                   <p className="font-bold hover:underline">

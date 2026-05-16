@@ -4,7 +4,7 @@ import { redirect, notFound } from "next/navigation";
 
 import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import { prisma } from "@/lib/prisma";
 
@@ -12,7 +12,7 @@ import { updateProject } from "@/actions/projectActions";
 
 type Props = {
   params: Promise<{
-    id: string;
+    slug: string;
   }>;
 };
 
@@ -26,12 +26,12 @@ export default async function EditProjectPage({
     redirect("/");
   }
 
-  const { id } = await params;
+  const { slug } = await params;
 
   const project =
     await prisma.project.findUnique({
       where: {
-        id,
+        slug,
       },
 
       include: {
@@ -58,7 +58,7 @@ export default async function EditProjectPage({
       <div className="mb-4">
 
         <Link
-          href={`/projects/${project.id}`}
+          href={`/projects/${project.slug}`}
           className="text-sm hover:underline"
         >
           ← back to listing

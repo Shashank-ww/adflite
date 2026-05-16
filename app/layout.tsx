@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { ToastProvider } from "@/components/providers/ToastProvider";
 
 export const metadata: Metadata = {
   title: "adflite",
@@ -18,6 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
 
+        <ToastProvider>
       <AuthProvider>
 
         <Header />
@@ -29,7 +31,7 @@ export default function RootLayout({
         <Footer />
 
       </AuthProvider>
-        
+        </ToastProvider>
       </body>
     </html>
   );

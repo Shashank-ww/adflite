@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useState } from "react";
+import { useToast } from "@/components/providers/ToastProvider";
 
 import {
   signIn,
@@ -19,6 +20,9 @@ function Loader() {
 }
 
 export default function Header() {
+  
+  const { showToast } = useToast();
+  
   const {
     data: session,
     status,
@@ -29,6 +33,7 @@ export default function Header() {
 
   const [authLoading, setAuthLoading] =
     useState(false);
+
 
   const links = [
     {
@@ -44,8 +49,9 @@ export default function Header() {
     {
       href: "/messages",
       label: "messages",
+      count: 1,
     },
-  ];
+      ];
 
   return (
     <header className="border-b border-gray-300 bg-white">
@@ -58,7 +64,7 @@ export default function Header() {
           href="/"
           className="text-base font-bold tracking-wide"
         >
-          adflite.com
+          powerpings.com
         </Link>
 
         {/* DESKTOP */}
@@ -73,7 +79,15 @@ export default function Header() {
                 href={link.href}
                 className="hover:underline"
               >
-                {link.label}
+                <div className="flex items-center gap-1">
+                  <span>{link.label}</span>
+
+                  {link.count ? (
+                    <span>
+                      ({link.count})
+                    </span>
+                  ) : null}
+                </div>
               </Link>
             ))}
 
@@ -97,7 +111,11 @@ export default function Header() {
 
                 {session.user.image ? (
                   <img
-                    src={session.user.image}
+                    src={
+                      session.user.image?.trim()
+                        ? session.user.image
+                        : "/assets/popeye.jpg"
+                    }
                     alt="profile"
                     className="h-7 w-7 rounded-full border border-gray-300 object-cover"
                   />
@@ -165,6 +183,7 @@ export default function Header() {
                     onClick={async () => {
                       setAuthLoading(true);
 
+                      showToast("logging out...");
                       await signOut();
                     }}
                     className="px-4 py-3 text-left text-red-600 hover:bg-gray-50"
@@ -191,7 +210,13 @@ export default function Header() {
               onClick={async () => {
                 setAuthLoading(true);
 
-                await signIn("google");
+                showToast(
+                  "redirecting to google login..."
+                );
+
+                await signIn("google", {
+                  callbackUrl: "/profile/onboarding",
+                });
               }}
             >
 
@@ -339,6 +364,7 @@ export default function Header() {
                   onClick={async () => {
                     setAuthLoading(true);
 
+                    showToast("logging out...");
                     await signOut();
                   }}
                   className="py-3 text-left text-red-600"
@@ -358,7 +384,13 @@ export default function Header() {
                 onClick={async () => {
                   setAuthLoading(true);
 
-                  await signIn("google");
+                  showToast(
+                    "redirecting to google login..."
+                  );
+
+                  await signIn("google", {
+                    callbackUrl: "/profile/onboarding",
+                  });
                 }}
                 className="py-3 text-left"
               >

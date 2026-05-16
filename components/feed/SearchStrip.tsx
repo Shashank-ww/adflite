@@ -2,7 +2,7 @@ export default function SearchStrip() {
   return (
     <form
       action="/"
-      className="border-b border-gray-300 p-3"
+      className="border-b border-gray-300 p-4"
     >
       <input
         type="text"

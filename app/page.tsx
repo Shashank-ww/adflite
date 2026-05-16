@@ -1,7 +1,5 @@
-import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import ProjectFeed from "@/components/feed/ProjectFeed";
-import Footer from "@/components/layout/Footer";
 
 export default async function HomePage({
   searchParams,

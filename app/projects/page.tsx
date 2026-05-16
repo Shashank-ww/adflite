@@ -44,7 +44,7 @@ export default async function ProjectsPage() {
         {projects.length > 0 ? (
           projects.map((project) => (
             <Link
-              key={project.id}
+              key={project.slug}
               href={`/projects/${project.slug}`}
               className="border-b border-gray-200 p-5 transition hover:bg-gray-50"
             >

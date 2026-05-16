@@ -2,29 +2,34 @@
 
 import { signIn, useSession } from "next-auth/react";
 
+type Props = {
+  children: React.ReactNode;
+};
+
 export default function AuthAction({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { data: session } =
-    useSession();
+}: Props) {
+  const { data: session } = useSession();
 
-  function handleClick() {
-    if (!session) {
-      signIn("google");
-    }
+  // USER NOT LOGGED IN
+  if (!session) {
+    return (
+      <button
+        type="button"
+        onClick={() => signIn("google")}
+        className="hover:underline"
+      >
+        login to {children}
+      </button>
+    );
   }
 
   return (
     <button
-      type="button"
-      onClick={handleClick}
+      type="submit"
       className="hover:underline"
     >
-      {session
-        ? children
-        : `login to ${children}`}
+      {children}
     </button>
   );
 }

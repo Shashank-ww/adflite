@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import { prisma } from "@/lib/prisma";
 
@@ -54,20 +54,27 @@ export default async function EditProfilePage() {
 
   {/* NAME */}
 
-  <div>
+<div>
 
-    <label className="mb-2 block text-sm font-bold">
-      name
-    </label>
+  <label className="mb-2 block text-sm font-bold">
+    username
+  </label>
 
-    <input
-      type="text"
-      name="name"
-      defaultValue={user.name || ""}
-      className="w-full border border-gray-300 px-3 py-2 outline-none"
-    />
+  <input
+    type="text"
+    name="name"
+    defaultValue={user.name || ""}
+    placeholder="myname"
+    className="w-full border border-gray-300 px-3 py-2 lowercase outline-none"
+  />
 
-  </div>
+  <p className="mt-1 text-xs text-gray-500">
+
+    one word only · public profile id
+
+  </p>
+
+</div>
 
   {/* HEADLINE */}
 
@@ -109,20 +116,12 @@ export default async function EditProfilePage() {
         open to work
       </option>
 
-      <option value="available for freelance">
-        available for freelance
-      </option>
-
-      <option value="building something">
-        building something
-      </option>
-
       <option value="hiring">
         hiring
       </option>
 
       <option value="just networking">
-        just networking
+        networking
       </option>
 
       <option value="exploring opportunities">
@@ -161,13 +160,15 @@ export default async function EditProfilePage() {
       </label>
 
       <input
-        type="text"
+        type="number"
         name="hourlyRate"
         defaultValue={user.hourlyRate || ""}
         placeholder="$25/hr"
         className="w-full border border-gray-300 px-3 py-2 outline-none"
       />
-
+      <p className="mt-1 text-xs text-gray-500">
+        rate per hour
+      </p>
     </div>
 
     <div>
@@ -185,6 +186,9 @@ export default async function EditProfilePage() {
         placeholder="5"
         className="w-full border border-gray-300 px-3 py-2 outline-none"
       />
+      <p className="mt-1 text-xs text-gray-500">
+        years
+      </p>
 
     </div>
 
@@ -192,43 +196,77 @@ export default async function EditProfilePage() {
 
   {/* LANGUAGES */}
 
-  <div>
+<div>
 
-    <label className="mb-2 block text-sm font-bold">
-      languages
-    </label>
+  <label className="mb-2 block text-sm font-bold">
+    languages
+  </label>
 
-    <input
-      type="text"
-      name="languages"
-      defaultValue={
-        user.languages?.join(", ") || ""
-      }
-      placeholder="english, hindi"
-      className="w-full border border-gray-300 px-3 py-2 outline-none"
-    />
+  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+
+    {[
+      "english",
+      "hindi",
+      "bengali",
+      "tamil",
+      "telugu",
+      "marathi",
+      "punjabi",
+      "gujarati",
+      "malayalam",
+      "kannada",
+      "spanish",
+      "french",
+      "german",
+      "arabic",
+      "mandarin",
+    ].map((language) => (
+      <label
+        key={language}
+        className="flex items-center gap-2"
+      >
+
+        <input
+          type="checkbox"
+          name="languages"
+          value={language}
+          defaultChecked={user.languages.includes(
+            language
+          )}
+        />
+
+        {language}
+
+      </label>
+    ))}
 
   </div>
+
+</div>
 
   {/* SKILLS */}
 
-  <div>
+<div>
 
-    <label className="mb-2 block text-sm font-bold">
-      skills
-    </label>
+  <label className="mb-2 block text-sm font-bold">
+    skills
+  </label>
 
-    <input
-      type="text"
-      name="skills"
-      defaultValue={
-        user.skills.join(", ")
-      }
-      placeholder="meta ads, analytics, seo"
-      className="w-full border border-gray-300 px-3 py-2 outline-none"
-    />
+  <input
+    type="text"
+    name="skills"
+    defaultValue={
+      user.skills.join(", ")
+    }
+    placeholder="meta ads, analytics, seo"
+    className="w-full border border-gray-300 px-3 py-2 outline-none"
+  />
 
-  </div>
+  <p className="mt-2 text-xs text-gray-500">
+    comma separated
+  </p>
+
+</div>
 
   {/* BIO */}
 
