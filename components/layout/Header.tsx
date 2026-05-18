@@ -10,6 +10,7 @@ import {
   signOut,
   useSession,
 } from "next-auth/react";
+import { OrigamiIcon } from "lucide-react";
 
 function Loader() {
   return (
@@ -62,9 +63,15 @@ export default function Header() {
 
         <Link
           href="/"
-          className="text-base font-bold tracking-wide"
+          className="flex text-base font-bold tracking-wide gap-1 items-center justify-center"
         >
-          powerpings.com
+          <OrigamiIcon size={20} />
+
+          <div className="flex items-center">
+            <p className="font-thin">switch</p>
+            <p className="font-bold">waters</p>
+            <span className="text-neutral-400">.com</span>
+          </div>
         </Link>
 
         {/* DESKTOP */}

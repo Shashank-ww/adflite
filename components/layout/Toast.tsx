@@ -33,41 +33,17 @@ export default function Toast({
   }, [show, onClose]);
 
   return (
-    <div
-      className={`fixed bottom-5 right-5 z-9999 transition-all duration-300 ${
+    <div className={`fixed bottom-5 right-5 z-9999 transition-all duration-300 ${
         show
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-3 opacity-0"
       }`}
     >
 
-     <div
-  className="
-    flex items-start gap-3
-
-    min-w-70
-    max-w-sm
-
-    border border-neutral-700
-    bg-neutral-900
-
-    px-4 py-3
-
-    text-sm text-neutral-100
-
-    shadow-2xl
-  "
->
+     <div className="flex items-start gap-3 min-w-70 max-w-sm border border-neutral-700 bg-neutral-900 px-4 py-3 text-sm text-neutral-100 shadow-2xl">
 
   {/* LEFT ICON */}
-  <div
-    className="
-
-      flex h-6 w-6 shrink-0 items-center justify-center
-
-      text-neutral-200
-    "
-  >
+  <div className="flex h-6 w-6 shrink-0 items-center justify-center text-neutral-200">
 
     <BellRingIcon size={16} />
 
@@ -76,13 +52,7 @@ export default function Toast({
   {/* MESSAGE */}
   <div className="min-w-0 flex-1">
 
-    <p
-      className="
-        wrap-break-word
-        leading-relaxed
-        text-neutral-100
-      "
-    >
+    <p className="wrap-break-word leading-relaxed text-neutral-100">
 
       {message}
 
@@ -93,22 +63,9 @@ export default function Toast({
   {/* CLOSE */}
   <button
     onClick={onClose}
-    className="
-      flex h-6 w-6 shrink-0 items-center justify-center
-
-      rounded-full
-
-      bg-neutral-800
-
-      text-neutral-400
-
-      transition
-
-      hover:bg-neutral-700
-      hover:text-white
-    "
-    aria-label="Close toast"
-  >
+    className="flex h-6 w-6 shrink-0 items-center justify-center 
+    rounded-full bg-neutral-800 text-neutral-400 transition hover:bg-neutral-700 hover:text-white" 
+    aria-label="Close toast">
 
     <X size={14} />
 

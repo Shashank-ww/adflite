@@ -32,7 +32,7 @@ export default function AboutPage() {
         <div className="space-y-6 p-6 text-sm leading-7 text-gray-800">
 
           <p>
-            adflite is a focused hiring board built for
+            switchwaters is a focused hiring board built for
             marketers, media buyers, ad-ops specialists,
             editors, designers, strategists, and creative
             operators.

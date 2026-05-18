@@ -32,7 +32,7 @@ export default function TermsPage() {
         <div className="space-y-6 p-6 text-sm leading-7 text-gray-800">
 
           <p>
-            by using adflite, you agree to use the platform
+            by using switchwaters, you agree to use the platform
             responsibly and lawfully.
           </p>
 
@@ -63,7 +63,7 @@ export default function TermsPage() {
             </h2>
 
             <p>
-              adflite acts only as a discovery and publishing
+              switchwaters acts only as a discovery and publishing
               platform. we are not involved in employment,
               payments, contracts, or disputes between users.
             </p>

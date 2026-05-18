@@ -89,7 +89,7 @@ export default function GuidelinesPage() {
             </h2>
 
             <p>
-              adflite is intentionally lightweight. users are
+              switchwaters is intentionally lightweight. users are
               expected to do their own diligence before hiring,
               collaborating, sharing files, or making payments.
             </p>

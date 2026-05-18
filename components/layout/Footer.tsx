@@ -48,7 +48,7 @@ export default function Footer() {
 
         <p className="leading-6">
 
-          © 2026 adflite - an internet classified
+          © 2026 switchwaters - an internet classified
           for marketers, media buyers, ad-ops
           specialists, and creative operators.
 

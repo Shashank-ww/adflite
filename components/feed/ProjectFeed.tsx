@@ -11,10 +11,11 @@ import FeedIntro from "./FeedIntro";
 
 type Props = {
   query?: string;
+  category?: string;
 };
 
 export default async function ProjectFeed({
-  query,
+  query, category,
 }: Props) {
 
   // SESSION
@@ -22,9 +23,12 @@ export default async function ProjectFeed({
     await getServerSession(authOptions);
 
   // PROJECTS
-  const projects =
-    await prisma.project.findMany({
-      where: query
+const projects =
+  await prisma.project.findMany({
+
+    where:
+
+      query
         ? {
             OR: [
               {
@@ -33,12 +37,14 @@ export default async function ProjectFeed({
                   mode: "insensitive",
                 },
               },
+
               {
                 description: {
                   contains: query,
                   mode: "insensitive",
                 },
               },
+
               {
                 category: {
                   contains: query,
@@ -47,36 +53,45 @@ export default async function ProjectFeed({
               },
             ],
           }
+
+        : category &&
+          category !== "all"
+
+        ? {
+            category: {
+              contains:
+                category
+                  .replaceAll("-", " ")
+                  .trim(),
+
+              mode: "insensitive",
+            },
+          }
+
         : undefined,
 
-      include: {
-        user: true,
-        pings: true,
-        savedProjects: true,
-        applications: true,
-      },
+    include: {
+      user: true,
+      pings: true,
+      savedProjects: true,
+      applications: true,
+    },
 
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-    console.log(
-  "SESSION USER ID:",
-  session?.user?.id
-);
-
-console.log(
-  "FIRST PROJECT SAVES:",
-  projects[0]?.savedProjects
-);
 
   return (
     <section className="w-full overflow-hidden border border-gray-200 bg-white">
 
       <FeedIntro />
 
-      <SearchStrip />
+      <SearchStrip
+        query={query}
+        category={category}
+      />
 
       <div className="flex w-full flex-col">
 

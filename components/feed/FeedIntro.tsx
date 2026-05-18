@@ -18,23 +18,22 @@ export default async function FeedIntro() {
 
         {/* LEFT */}
 
-        <div className="max-w-2xl">
+        <div className="max-w-prose">
 
-          <h1 className="text-2xl font-bold leading-tight text-blue-950 sm:text-3xl">
+          <h1 className="text-3xl font-bold leading-tight text-blue-950 sm:text-4xl">
 
-            internet workboard for media marketing
+            dont drift currents. switch waters
 
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-blue-900">
 
-            Find freelance gigs, contract work,
-            creative collaborations and growth roles
-            across media, advertising and digital teams.
+            feed for ambitious people looking to switch roles, companies, careers, and industries. 
+            find opportunities across startups, media, tech, agencies, and creative work.
 
             <span className="mt-2 block">
 
-              Built for operators, marketers,
+              built for ad operators, marketers,
               buyers, editors, strategists,
               creators and internet talent.
 
@@ -49,21 +48,9 @@ export default async function FeedIntro() {
         {/* RIGHT */}
 
         <div
-          className="
-            w-full shrink-0
+          className="w-fit shrink-0 border border-blue-200 text-center bg-white px-3 py-1 text-xs text-blue-700">
 
-            border border-blue-200
-            bg-white
-
-            px-5 py-4
-
-            text-center
-
-            sm:w-auto
-          "
-        >
-
-          <p className="text-3xl font-bold text-blue-950">
+          <p className="text-2xl font-bold text-blue-950">
 
             {totalProjects}+
 

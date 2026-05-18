@@ -6,7 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { ToastProvider } from "@/components/providers/ToastProvider";
 
 export const metadata: Metadata = {
-  title: "adflite",
+  title: "switchwaters.com",
   description: "classifieds for internet",
 };
 
