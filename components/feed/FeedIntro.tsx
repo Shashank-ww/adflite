@@ -5,6 +5,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 import FeedIntroActions from "./FeedIntroActions";
+import LiveCurrents from "../ui/live-currents";
+import LiveCurrentsShell from "../ui/live-currents-shell";
 
 export default async function FeedIntro() {
 
@@ -22,14 +24,14 @@ export default async function FeedIntro() {
 
           <h1 className="text-3xl font-bold leading-tight text-blue-950 sm:text-4xl">
 
-            dont drift currents. switch waters
+            dont drift currents, switchwaters.com
 
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-blue-900">
 
-            feed for ambitious people looking to switch roles, companies, careers, and industries. 
-            find opportunities across startups, media, tech, agencies, and creative work.
+            a feed for ambitious people looking to switch roles, companies, careers, across industries. 
+            you can find opportunities with startups, media, tech, agencies, and creative work.
 
             <span className="mt-2 block">
 
@@ -45,24 +47,17 @@ export default async function FeedIntro() {
 
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT DO NOT SHOW COUNTER FOR NOW */}
 
         <div
-          className="w-fit shrink-0 border border-blue-200 text-center bg-white px-3 py-1 text-xs text-blue-700">
+          className="w-full sm:w-auto shrink-0">
 
-          <p className="text-2xl font-bold text-blue-950">
-
-            {totalProjects}+
-
-          </p>
-
-          <p className="mt-1 text-xs uppercase tracking-wide text-blue-700">
-
-            active listings
-
-          </p>
-
+            <LiveCurrentsShell>
+  <LiveCurrents />
+</LiveCurrentsShell>
         </div>
+
+
 
       </div>
 

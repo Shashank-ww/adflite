@@ -14,7 +14,7 @@ export default async function HomePage({
   return (
     <main className="min-h-screen">
 
-      <div className="mx-auto flex max-w-6xl gap-3 px-2 py-3 md:px-4">
+      <div className="mx-auto flex max-w-6xl gap-4 p-4">
         <Sidebar />
         <ProjectFeed query={q} />
       </div>

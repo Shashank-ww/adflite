@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 
-import Toast from "../layout/Toast";
+import Toast from "@/components/layout/Toast";
 
 type ToastContextType = {
   showToast: (

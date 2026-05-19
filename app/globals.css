@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f6f6ef;
+  --bg: #eff6f0;
   --card: #ffffff;
   --border: #d1d5db;
 
-  --link: #0000ee;
+  --link: #222cb1;
   --link-visited: #551a8b;
 
   --text: #111827;
