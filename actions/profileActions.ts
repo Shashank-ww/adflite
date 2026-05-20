@@ -20,6 +20,13 @@ export async function updateProfile(
     throw new Error("Unauthorized");
   }
 
+  //USER
+  const username =
+  (formData.get("username") as string)
+    ?.trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
   // LANGUAGES
   const languages = (
     formData.getAll(
@@ -45,6 +52,9 @@ export async function updateProfile(
     },
 
     data: {
+
+      username,
+      
       name:
         formData.get("name") as string,
 
@@ -86,6 +96,8 @@ export async function updateProfile(
   revalidatePath("/");
 
   revalidatePath("/profile/onboarding");
+
+  revalidatePath(`/u/${username}`);
 
   redirect("/profile");
 }

@@ -1,26 +1,30 @@
 import Link from "next/link";
 
-import { getServerSession } from "next-auth";
-
-import { authOptions } from "@/lib/auth";
-
 import { prisma } from "@/lib/prisma";
 
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
-export default async function ProfilePage() {
+type Props = {
+  params: Promise<{
+    username: string;
+  }>;
+};
 
-  const session =
-    await getServerSession(authOptions);
+export default async function PublicProfilePage({
+  params,
+}: Props) {
 
-  if (!session?.user?.email) {
-    redirect("/");
+  const { username } =
+    await params;
+
+  if (!username) {
+    notFound();
   }
 
   const user =
     await prisma.user.findUnique({
       where: {
-        email: session.user.email,
+        username,
       },
 
       include: {
@@ -37,7 +41,7 @@ export default async function ProfilePage() {
     });
 
   if (!user) {
-    redirect("/");
+    notFound();
   }
 
   const totalPings =
@@ -49,28 +53,6 @@ export default async function ProfilePage() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-6">
-
-      {/* TOP NAV */}
-
-      <div className="mb-4 flex gap-4 text-sm">
-
-        <Link
-          href="/"
-          className="hover:underline"
-        >
-          ← home
-        </Link>
-
-        <Link
-          href="/settings"
-          className="hover:underline"
-        >
-          settings
-        </Link>
-
-      </div>
-
-      {/* PROFILE */}
 
       <div className="border border-gray-300 bg-white">
 
@@ -85,32 +67,20 @@ export default async function ProfilePage() {
               <div className="flex flex-wrap items-center gap-2">
 
                 <h1 className="text-2xl font-bold">
-
-                  {user.name ||
-                    "anonymous being"}
-
+                  {user.name || "anonymous"}
                 </h1>
 
                 {user.status && (
-                  <span className="border border-gray-300 bg-gray-100 px-2 py-1 text-[11px] text-gray-600">
+                  <span className="border border-gray-300 bg-gray-100 px-2 py-1 text-[11px]">
                     {user.status}
                   </span>
                 )}
 
               </div>
 
-              {user.username && (
-                <div className="mt-2">
-
-                  <Link
-                    href={`/u/${user.username}`}
-                    className="text-sm text-gray-500 hover:underline"
-                  >
-                    switchwaters.com/u/{user.username}
-                  </Link>
-
-                </div>
-              )}
+              <p className="mt-2 text-sm text-gray-500">
+                @{user.username}
+              </p>
 
               {user.headline && (
                 <p className="mt-4 text-lg leading-7 text-gray-800">
@@ -126,17 +96,26 @@ export default async function ProfilePage() {
 
             </div>
 
-            <div className="flex shrink-0 flex-col items-end gap-3">
+            {user.image && (
+              <img
+                src={user.image}
+                alt={user.name || "user"}
+                className="h-20 w-20 rounded-full border border-gray-300"
+              />
+            )}
 
-              {user.image && (
-                <img
-                  src={user.image}
-                  alt={user.name || "user"}
-                  className="h-20 w-20 rounded-full border border-gray-300"
-                />
-              )}
+          </div>
 
-            </div>
+          {/* ACTIONS */}
+
+          <div className="mt-6 flex flex-wrap gap-3">
+
+            <Link
+              href={`/messages?user=${user.id}`}
+              className="border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50"
+            >
+              message
+            </Link>
 
           </div>
 
@@ -190,60 +169,48 @@ export default async function ProfilePage() {
 
         {/* ABOUT */}
 
-        <div className="border-b border-gray-300 p-6">
+        {user.bio && (
 
-          <div className="mb-4 flex items-center justify-between">
+          <div className="border-b border-gray-300 p-6">
 
             <h2 className="font-bold">
               about
             </h2>
 
-            <Link
-              href="/profile/edit"
-              className="text-xs hover:underline"
-            >
-              edit profile
-            </Link>
+            <p className="mt-4 whitespace-pre-line text-sm leading-7 text-gray-700">
+              {user.bio}
+            </p>
 
           </div>
 
-          <p className="whitespace-pre-line text-sm leading-7 text-gray-700">
-
-            {user.bio ||
-              "no bio added yet."}
-
-          </p>
-
-        </div>
+        )}
 
         {/* SKILLS */}
 
-        <div className="border-b border-gray-300 p-6">
+        {user.skills.length > 0 && (
 
-          <h2 className="font-bold">
-            skillsets
-          </h2>
+          <div className="border-b border-gray-300 p-6">
 
-          <div className="mt-4 flex flex-wrap gap-2">
+            <h2 className="font-bold">
+              skillsets
+            </h2>
 
-            {user.skills.length > 0 ? (
-              user.skills.map((skill) => (
+            <div className="mt-4 flex flex-wrap gap-2">
+
+              {user.skills.map((skill) => (
                 <span
                   key={skill}
                   className="border border-gray-300 bg-gray-100 px-2 py-1 text-xs"
                 >
                   {skill}
                 </span>
-              ))
-            ) : (
-              <p className="text-sm text-gray-500">
-                no skills added
-              </p>
-            )}
+              ))}
+
+            </div>
 
           </div>
 
-        </div>
+        )}
 
         {/* LANGUAGES */}
 
@@ -277,7 +244,7 @@ export default async function ProfilePage() {
         <div className="p-6">
 
           <h2 className="font-bold">
-            listings
+            recent listings
           </h2>
 
           <div className="mt-4 flex flex-col gap-3">

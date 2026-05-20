@@ -6,11 +6,10 @@ import { authOptions } from "@/lib/auth";
 
 import { prisma } from "@/lib/prisma";
 
-import Link from "next/link";
-
-import { updateProfile } from "@/actions/profileActions";
+import OnboardingForm from "@/components/profile/OnboardingForm";
 
 export default async function OnboardingPage() {
+
   const session =
     await getServerSession(authOptions);
 
@@ -30,6 +29,7 @@ export default async function OnboardingPage() {
   }
 
   // ALREADY ONBOARDED
+
   if (user.headline) {
     redirect("/");
   }
@@ -40,137 +40,36 @@ export default async function OnboardingPage() {
       <div className="mb-8">
 
         <h1 className="text-2xl font-bold">
-
-          complete your profile
-
+          enter the waters
         </h1>
 
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-500 leading-6">
 
-          setup your public identity
-          before using the platform
+          build your public identity before
+          exploring projects, talent and
+          opportunities across switchwaters.
 
         </p>
 
       </div>
 
-      <form
-        action={updateProfile}
-        className="flex flex-col gap-5 border border-gray-300 bg-white p-6"
-      >
+      <OnboardingForm
+        user={{
+          name:
+            user.name ||
+            session.user.name ||
+            "",
 
-        {/* USER */}
-        <div className="flex items-center gap-4">
+          email:
+            user.email || "",
 
-          <img
-            src={
-              user.image?.trim()
-                ? user.image
-                : "/avatars/avatar2.jpg"
-            }
-            alt="profile"
-            className="h-16 w-16 rounded-full border border-gray-300 object-cover"
-          />
+          image:
+            user.image || "",
 
-          <div>
-
-            <p className="font-semibold">
-
-              {user.name}
-
-            </p>
-
-            <p className="text-sm text-gray-500">
-
-              {user.email}
-
-            </p>
-
-          </div>
-
-        </div>
-
-        {/* HEADLINE */}
-        <div>
-
-          <label className="mb-2 block text-sm font-bold">
-
-            headline
-
-          </label>
-
-          <input
-            type="text"
-            name="headline"
-            required
-            placeholder="media buyer · growth marketer"
-            className="w-full border border-gray-300 px-3 py-2 outline-none"
-          />
-
-        </div>
-
-        {/* LOCATION */}
-        <div>
-
-          <label className="mb-2 block text-sm font-bold">
-
-            location
-
-          </label>
-
-          <input
-            type="text"
-            name="location"
-            placeholder="gurgaon"
-            className="w-full border border-gray-300 px-3 py-2 outline-none"
-          />
-
-        </div>
-
-        {/* SKILLS */}
-        <div>
-
-          <label className="mb-2 block text-sm font-bold">
-
-            skills
-
-          </label>
-
-          <input
-            type="text"
-            name="skills"
-            placeholder="meta ads, seo, analytics"
-            className="w-full border border-gray-300 px-3 py-2 outline-none"
-          />
-
-        </div>
-
-        {/* BIO */}
-        <div>
-
-          <label className="mb-2 block text-sm font-bold">
-
-            bio
-
-          </label>
-
-          <textarea
-            rows={5}
-            name="bio"
-            placeholder="tell people about yourself"
-            className="w-full border border-gray-300 px-3 py-2 outline-none"
-          />
-
-        </div>
-
-        <button
-          type="submit"
-          className="border border-black bg-black px-4 py-2 text-sm text-white"
-        >
-          continue
-        </button>
-
-      </form>
+          username:
+            user.username || "",
+        }}
+      />
 
     </main>
   );

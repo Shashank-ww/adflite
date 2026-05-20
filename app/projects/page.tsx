@@ -43,9 +43,8 @@ export default async function ProjectsPage() {
 
         {projects.length > 0 ? (
           projects.map((project) => (
-            <Link
+            <article
               key={project.slug}
-              href={`/projects/${project.slug}`}
               className="border-b border-gray-200 p-5 transition hover:bg-gray-50"
             >
 
@@ -53,20 +52,35 @@ export default async function ProjectsPage() {
 
                 <div className="min-w-0 flex-1">
 
-                  <h2 className="text-base font-bold leading-6">
+<Link
+  href={`/projects/${project.slug}`}
+  className="text-base font-bold leading-6 hover:underline"
+>
+  {project.title}
+</Link>
 
-                    {project.title}
+<p className="mt-1 text-xs text-gray-500">
 
-                  </h2>
+  posted by{" "}
 
-                  <p className="mt-1 text-xs text-gray-500">
+  {project.user.username ? (
 
-                    posted by{" "}
+    <Link
+      href={`/u/${project.user.username}`}
+      className="hover:underline"
+    >
+      {project.user.name || "anonymous"}
+    </Link>
 
-                    {project.user.name ||
-                      "anonymous"}
+  ) : (
 
-                  </p>
+    <span>
+      {project.user.name || "anonymous"}
+    </span>
+
+  )}
+
+</p>
 
                 </div>
 
@@ -86,11 +100,16 @@ export default async function ProjectsPage() {
 
               </div>
 
-              <p className="mt-3 line-clamp-3 text-sm leading-7 text-gray-700">
+<Link
+  href={`/projects/${project.slug}`}
+  className="block"
+>
 
-                {project.description}
+  <p className="mt-3 line-clamp-3 text-sm leading-7 text-gray-700">
+    {project.description}
+  </p>
 
-              </p>
+</Link>
 
               <div className="mt-4 flex flex-wrap gap-2 text-xs">
 
@@ -114,7 +133,7 @@ export default async function ProjectsPage() {
 
               </div>
 
-            </Link>
+            </article>
           ))
         ) : (
           <div className="p-8 text-sm text-gray-500">

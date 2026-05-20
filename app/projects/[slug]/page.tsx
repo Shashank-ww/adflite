@@ -62,14 +62,28 @@ export default async function ProjectDetailsPage({
               {project.title}
             </h1>
 
-            <p className="mt-2 text-sm text-gray-500">
+<p className="mt-2 text-sm text-gray-500">
 
-              posted by{" "}
+  posted by{" "}
 
-              {project.user.name ||
-                "anonymous"}
+  {project.user.username ? (
 
-            </p>
+    <Link
+      href={`/u/${project.user.username}`}
+      className="hover:underline"
+    >
+      {project.user.username || "anonymous"}
+    </Link>
+
+  ) : (
+
+    <span>
+      {project.user.username || "anonymous"}
+    </span>
+
+  )}
+
+</p>
 
           </div>
 

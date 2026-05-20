@@ -30,7 +30,7 @@ export default function LiveCurrentsShell({
             border
             border-[#39ff14]/30
 
-            bg-slate-900
+            bg-slate-800
 
             px-3 py-2
 

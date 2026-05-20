@@ -29,8 +29,6 @@ type Props = {
 
     createdAt: Date;
 
-    userId: string;
-
     pings: { id: string }[];
 
     applications: {
@@ -46,6 +44,7 @@ type Props = {
     user: {
       id: string;
       name: string | null;
+      username: string | null;
       email: string | null;
       image: string | null;
       headline: string | null;
@@ -181,9 +180,28 @@ async function handleApply() {
 
           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
 
-            <span>
-              by {project.user.name || "anonymous"}
-            </span>
+<p>
+
+  by{" "}
+
+  {project.user.username ? (
+
+    <Link
+      href={`/u/${project.user.username}`}
+      className="hover:underline"
+    >
+      {project.user.username || "anonymous"}
+    </Link>
+
+  ) : (
+
+    <span>
+      {project.user.username || "anonymous"}
+    </span>
+
+  )}
+
+</p>
 
             {project.user.headline && (
               <>
