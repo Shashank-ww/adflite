@@ -4,10 +4,10 @@ import { authOptions } from "@/lib/auth";
 
 import { prisma } from "@/lib/prisma";
 
-import ProjectCard from "../cards/ProjectCard";
-
 import SearchStrip from "./SearchStrip";
 import FeedIntro from "./FeedIntro";
+import FeedList from "./FeedList";
+
 
 type Props = {
   query?: string;
@@ -70,12 +70,59 @@ const projects =
 
         : undefined,
 
-    include: {
-      user: true,
+          select: {
+  id: true,
+  slug: true,
+  title: true,
+  description: true,
+
+  budget: true,
+  timeline: true,
+  category: true,
+  location: true,
+
+  createdAt: true,
+
+  user: {
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      email: true,
+      image: true,
+      headline: true,
+    },
+  },
+
+  _count: {
+    select: {
       pings: true,
-      savedProjects: true,
       applications: true,
     },
+  },
+
+  ...(session?.user?.id && {
+    savedProjects: {
+      where: {
+        userId: session.user.id,
+      },
+
+      select: {
+        userId: true,
+      },
+    },
+
+    applications: {
+      where: {
+        userId: session.user.id,
+      },
+
+      select: {
+        userId: true,
+      },
+    },
+  }),
+},
 
     orderBy: {
       createdAt: "desc",
@@ -93,32 +140,27 @@ const projects =
         category={category}
       />
 
-      <div className="flex w-full flex-col">
+{projects.length > 0 ? (
 
-        {projects.length > 0 ? (
-          projects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
+  <FeedList
+    projects={projects}
+    sessionUserId={
+      session?.user?.id ?? null
+    }
+    sessionUserEmail={
+      session?.user?.email ?? null
+    }
+  />
 
-              sessionUserId={
-                session?.user?.id ?? null
-              }
+) : (
 
-              sessionUserEmail={
-                session?.user?.email ?? null
-              }
-            />
-          ))
-        ) : (
-          <div className="p-10 text-center text-sm text-gray-500">
+  <div className="p-10 text-center text-sm text-gray-500">
 
-            no listings found
+    no listings found
 
-          </div>
-        )}
+  </div>
 
-      </div>
+)}
 
     </section>
   );

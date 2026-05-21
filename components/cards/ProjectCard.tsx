@@ -29,7 +29,10 @@ type Props = {
 
     createdAt: Date;
 
-    pings: { id: string }[];
+    _count: {
+      pings: number;
+      applications: number;
+    };
 
     applications: {
       id: string;
@@ -70,21 +73,6 @@ const initialSaved =
     (s) => s.userId === sessionUserId
   );
 
-  console.log(
-  "CARD USER:",
-  sessionUserId
-);
-
-console.log(
-  "CARD SAVED PROJECTS:",
-  project.savedProjects
-);
-
-console.log(
-  "INITIAL SAVED:",
-  initialSaved
-);
-
 const [saved, setSaved] =
   useState(initialSaved);
 
@@ -106,8 +94,8 @@ const { data: session } = useSession();
 const [showApplyForm, setShowApplyForm] =
   useState(false);
 
-  const [pingCount, setPingCount] =
-    useState(project.pings.length);
+const [pingCount, setPingCount] =
+  useState(project._count.pings);
 
   const isOwner =
     sessionUserEmail ===

@@ -122,7 +122,7 @@ export default function SearchStrip({
                 e.target.value
               )
             }
-            placeholder="search the backwaters..."
+            placeholder="search the open waters..."
             className="
               min-w-0
               flex-1

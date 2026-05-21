@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/components/providers/ToastProvider";
 
 import {
@@ -35,6 +35,41 @@ export default function Header() {
   const [authLoading, setAuthLoading] =
     useState(false);
 
+  const [unreadCount, setUnreadCount] =
+    useState(0);
+
+    useEffect(() => {
+
+  if (!session?.user) {
+    return;
+  }
+
+  async function loadUnread() {
+
+    try {
+
+      const res =
+        await fetch("/api/messages");
+
+      const messages =
+        await res.json();
+
+      const unread =
+        messages.filter(
+          (msg: any) =>
+            !msg.seen
+        ).length;
+
+      setUnreadCount(unread);
+
+    } catch {
+      setUnreadCount(0);
+    }
+  }
+
+  loadUnread();
+
+}, [session]);
 
   const links = [
     {
@@ -50,7 +85,10 @@ export default function Header() {
     {
       href: "/messages",
       label: "messages",
-      count: 1,
+      count:
+        unreadCount > 0
+          ? unreadCount
+          : undefined,
     },
       ];
 

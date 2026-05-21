@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export async function GET(req: Request) {
+
   const session =
     await getServerSession(authOptions);
 
@@ -31,29 +32,42 @@ export async function GET(req: Request) {
   const receiverId =
     searchParams.get("receiverId");
 
-  if (!receiverId) {
-    return NextResponse.json([]);
+  // THREAD MODE
+  if (receiverId) {
+
+    const messages =
+      await prisma.message.findMany({
+        where: {
+          OR: [
+            {
+              senderId: user.id,
+              receiverId,
+            },
+            {
+              senderId: receiverId,
+              receiverId: user.id,
+            },
+          ],
+        },
+
+        orderBy: {
+          createdAt: "asc",
+        },
+      });
+
+    return NextResponse.json(messages);
   }
 
-  const messages =
+  // UNREAD MODE
+  const unreadMessages =
     await prisma.message.findMany({
       where: {
-        OR: [
-          {
-            senderId: user.id,
-            receiverId,
-          },
-          {
-            senderId: receiverId,
-            receiverId: user.id,
-          },
-        ],
-      },
-
-      orderBy: {
-        createdAt: "asc",
+        receiverId: user.id,
+        seen: false,
       },
     });
 
-  return NextResponse.json(messages);
+  return NextResponse.json(
+    unreadMessages
+  );
 }

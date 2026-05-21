@@ -13,6 +13,7 @@ export async function sendMessage(
   text: string,
   projectId?: string
 ) {
+
   const session =
     await getServerSession(authOptions);
 
@@ -31,21 +32,17 @@ export async function sendMessage(
     throw new Error("User not found");
   }
 
+const message =
   await prisma.message.create({
     data: {
       text,
-
       senderId: sender.id,
-
       receiverId,
-
       projectId,
     },
   });
 
-  revalidatePath("/messages");
+revalidatePath("/messages");
 
-  return {
-    success: true,
-  };
+return message;
 }

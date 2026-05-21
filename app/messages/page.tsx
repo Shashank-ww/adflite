@@ -20,8 +20,11 @@ type Props = {
 export default async function MessagesPage({
   searchParams,
 }: Props) {
+
   const session =
-    await getServerSession(authOptions);
+    await getServerSession(
+      authOptions
+    );
 
   if (!session?.user?.email) {
     redirect("/");
@@ -38,22 +41,49 @@ export default async function MessagesPage({
     redirect("/");
   }
 
-  const params = await searchParams;
+  const params =
+    await searchParams;
 
-  const receiverId = params.user;
+  const receiverId =
+    params.user;
 
-  const projectId = params.project;
+  const projectId =
+    params.project;
 
-  // ALL CONVERSATIONS
+  /* MARK ACTIVE CHAT READ */
+
+  if (receiverId) {
+
+    await prisma.message.updateMany({
+      where: {
+        senderId: receiverId,
+
+        receiverId:
+          currentUser.id,
+
+        seen: false,
+      },
+
+      data: {
+        seen: true,
+      },
+    });
+
+  }
+
+  /* ALL CONVERSATIONS */
+
   const conversations =
     await prisma.message.findMany({
       where: {
         OR: [
           {
-            senderId: currentUser.id,
+            senderId:
+              currentUser.id,
           },
           {
-            receiverId: currentUser.id,
+            receiverId:
+              currentUser.id,
           },
         ],
       },
@@ -68,83 +98,86 @@ export default async function MessagesPage({
       },
     });
 
-  // UNIQUE USERS
-  const uniqueUsers = Array.from(
-    new Map(
-      conversations.map((msg) => {
-        const otherUser =
-          msg.senderId === currentUser.id
-            ? msg.receiver
-            : msg.sender;
+  /* UNIQUE CONVERSATIONS */
 
-        return [
-          otherUser.id,
-          {
-            ...otherUser,
-            lastMessage: msg.text,
+  const uniqueUsers =
+    Array.from(
+      new Map(
+        conversations.map((msg) => {
+
+          const otherUser =
+            msg.senderId ===
+            currentUser.id
+              ? msg.receiver
+              : msg.sender;
+
+          return [
+            otherUser.id,
+            {
+              ...otherUser,
+
+              lastMessage:
+                msg.text,
+
               unread:
-                msg.receiverId === currentUser.id &&
+                msg.receiverId ===
+                  currentUser.id &&
                 !msg.seen,
+            },
+          ];
+        })
+      ).values()
+    );
+
+  /* CURRENT THREAD */
+
+  const messages =
+    receiverId
+      ? await prisma.message.findMany({
+          where: {
+            OR: [
+              {
+                senderId:
+                  currentUser.id,
+
+                receiverId,
+              },
+              {
+                senderId:
+                  receiverId,
+
+                receiverId:
+                  currentUser.id,
+              },
+            ],
           },
-        ];
-      })
-    ).values()
-  );
 
-  // CURRENT THREAD
-  const messages = receiverId
-    ? await prisma.message.findMany({
-        where: {
-          OR: [
-            {
-              senderId: currentUser.id,
-              receiverId,
-            },
-            {
-              senderId: receiverId,
-              receiverId: currentUser.id,
-            },
-          ],
-        },
+          orderBy: {
+            createdAt: "asc",
+          },
+        })
+      : [];
 
-        orderBy: {
-          createdAt: "asc",
-        },
-      })
-    : [];
+  /* ACTIVE USER */
 
-    if (receiverId) {
-      await prisma.message.updateMany({
-        where: {
-          senderId: receiverId,
-          receiverId: currentUser.id,
-          seen: false,
-        },
-
-        data: {
-          seen: true,
-        },
-      });
-    }
-
-  // ACTIVE USER
-  const activeUser = receiverId
-    ? await prisma.user.findUnique({
-        where: {
-          id: receiverId,
-        },
-      })
-    : null;
+  const activeUser =
+    receiverId
+      ? await prisma.user.findUnique({
+          where: {
+            id: receiverId,
+          },
+        })
+      : null;
 
   return (
-    <main className="mx-auto h-full max-w-6xl px-4 py-6">
+    <main className="mx-auto max-w-6xl px-4 py-6">
 
-      <div className="grid min-h-80vh overflow-hidden border border-gray-300 bg-white md:grid-cols-[280px_1fr]">
+      <div className="grid min-h-[82vh] overflow-hidden border border-gray-300 bg-white md:grid-cols-[280px_1fr]">
 
         {/* SIDEBAR */}
+
         <aside className="border-r border-gray-300 bg-white">
 
-          {/* TOP */}
           <div className="border-b border-gray-300 px-4 py-4">
 
             <h2 className="font-bold">
@@ -153,19 +186,21 @@ export default async function MessagesPage({
 
           </div>
 
-          {/* USERS */}
           <div className="flex flex-col">
 
             {uniqueUsers.length > 0 ? (
+
               uniqueUsers.map((user) => {
+
                 const active =
-                  receiverId === user.id;
+                  receiverId ===
+                  user.id;
 
                 return (
                   <Link
                     key={user.id}
                     href={`/messages?user=${user.id}`}
-                    className={`border-b border-gray-200 px-4 py-4 transition hover:bg-gray-50 ${
+                    className={`border-b border-gray-200 px-4 py-4 hover:bg-gray-50 ${
                       active
                         ? "bg-gray-100"
                         : ""
@@ -176,43 +211,52 @@ export default async function MessagesPage({
 
                       <div className="min-w-0 flex-1">
 
-                        <p
-                          className={`truncate text-sm ${
-                            active
-                              ? "font-bold"
-                              : "font-medium"
-                          }`}
-                        >
-                          {user.name ||
-                            "anonymous"}
-                        </p>
+                        <div className="flex items-center gap-2">
+
+                          <p
+                            className={`truncate text-sm ${
+                              active
+                                ? "font-bold"
+                                : "font-medium"
+                            }`}
+                          >
+
+                            {user.name ||
+                              "anonymous"}
+
+                          </p>
+
+                          {user.unread &&
+                            !active && (
+                              <span className="h-2 w-2 rounded-full bg-black" />
+                            )}
+
+                        </div>
 
                         <p className="mt-1 truncate text-xs text-gray-500">
 
-                          {user.lastMessage}
+                          {
+                            user.lastMessage
+                          }
 
                         </p>
 
                       </div>
-
-                      {/* TEMP NEW */}
-                        {user.unread && !active && (
-                          <div className="mt-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[10px] text-white">
-                            1
-                          </div>
-                        )}
 
                     </div>
 
                   </Link>
                 );
               })
+
             ) : (
+
               <div className="p-4 text-sm text-gray-500">
 
                 no conversations yet
 
               </div>
+
             )}
 
           </div>
@@ -220,28 +264,31 @@ export default async function MessagesPage({
         </aside>
 
         {/* CHAT */}
-        <section className="flex max-h-screen flex-col bg-gray-50">
 
-          {/* HEADER */}
+        <section className="flex max-h-[82vh] flex-col bg-gray-50">
+
           <div className="border-b border-gray-300 bg-white px-5 py-4">
 
             {activeUser ? (
+
               <div>
 
                 <h2 className="font-semibold">
+
                   {activeUser.name}
+
                 </h2>
 
-              <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500">
 
-                <span>
                   direct conversation
-                </span>
-                
-              </div>
+
+                </p>
 
               </div>
+
             ) : (
+
               <div>
 
                 <h2 className="font-semibold">
@@ -249,23 +296,34 @@ export default async function MessagesPage({
                 </h2>
 
                 <p className="mt-1 text-xs text-gray-500">
+
                   select a conversation
+
                 </p>
 
               </div>
+
             )}
 
           </div>
 
-          {/* CHAT WINDOW */}
           {receiverId ? (
+
             <ChatWindow
-              currentUserId={currentUser.id}
-              receiverId={receiverId}
-              initialMessages={messages}
+              currentUserId={
+                currentUser.id
+              }
+              receiverId={
+                receiverId
+              }
+              initialMessages={
+                messages
+              }
               projectId={projectId}
             />
+
           ) : (
+
             <div className="flex flex-1 items-center justify-center">
 
               <div className="text-center">
@@ -285,6 +343,7 @@ export default async function MessagesPage({
               </div>
 
             </div>
+
           )}
 
         </section>
