@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { createProject } from "@/actions/projectActions";
 
 import { getServerSession } from "next-auth";
@@ -7,6 +9,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export default async function PostPage() {
+
   const session =
     await getServerSession(authOptions);
 
@@ -15,26 +18,37 @@ export default async function PostPage() {
   }
 
   return (
+
     <main className="mx-auto max-w-3xl px-4 py-6">
 
+                <div className="flex flex-wrap mb-4 items-center justify-between gap-2">
+
+            <Link
+              href="/"
+              className="text-sm text-gray-500 hover:text-black">
+              ← back home
+            </Link>
+
+          
+
+          <Link
+            href="/projects"
+            className="border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
+            cancel post
+          </Link>
+
+        </div>
+
       {/* HEADER */}
+      
+      <div className="mb-6"> 
+        
+        <h1 className="text-xl font-bold"> post a listing </h1> 
+            <p className="mt-2 text-sm leading-6 text-gray-500"> 
+              share exactly what you need help with. clear listings get better applications, faster responses, and more relevant talent applying for the project. 
+            </p> 
+          </div>
 
-      <div className="mb-6">
-
-        <h1 className="text-xl font-bold">
-          post a listing
-        </h1>
-
-        <p className="mt-2 text-sm leading-6 text-gray-500">
-
-          share exactly what you need help with.
-
-          clear listings get better applications,
-          faster responses, and more relevant talent.
-
-        </p>
-
-      </div>
 
       {/* FORM */}
 
@@ -47,22 +61,34 @@ export default async function PostPage() {
 
         <div>
 
-          <label className="mb-2 block text-sm font-bold">
-            title
-          </label>
+          <div className="mb-2 flex items-center justify-between gap-3">
+
+            <label className="block text-sm font-bold">
+              title
+            </label>
+
+            <span className="text-xs text-gray-400">
+              first thing people notice
+            </span>
+
+          </div>
 
           <input
             type="text"
             name="title"
             required
             placeholder="looking for a contractual meta ads buyer for ecommerce brand"
-            className="w-full border border-gray-300 px-3 py-2 outline-none"
+            className="
+              w-full border border-gray-300
+              px-3 py-2
+              outline-none
+              transition
+              focus:border-black
+            "
           />
 
           <p className="mt-2 text-xs text-gray-500">
-
-            keep it direct and specific
-
+            keep it direct, searchable, and specific
           </p>
 
         </div>
@@ -71,13 +97,17 @@ export default async function PostPage() {
 
         <div>
 
-          <label className="mb-2 block text-sm font-bold">
-            description
-          </label>
+          <div className="mb-2 flex items-center justify-between gap-3">
 
-              <span className="text-xs text-gray-500">
-      Max 200 words
-    </span>
+            <label className="block text-sm font-bold">
+              description
+            </label>
+
+            <span className="text-xs text-gray-500">
+              max 200 words
+            </span>
+
+          </div>
 
           <textarea
             rows={10}
@@ -85,20 +115,29 @@ export default async function PostPage() {
             required
             placeholder={`what is your scope of work?
 
-mention expected deliverables
-tools/platforms involved
-industry/category with ideal experience
-working style and availability expectations
+mention:
+• deliverables
+• tools/platforms involved
+• industry/category
+• ideal experience
+• communication expectations
 
 example:
 
 looking for someone to manage meta ads for a d2c skincare brand. need support with campaign launches, creative testing, reporting, and scaling. experience with ecommerce brands preferred.`}
-            className="w-full border border-gray-300 px-3 py-2 leading-7 outline-none"
+            className="
+              w-full border border-gray-300
+              px-3 py-3
+              leading-7
+              outline-none
+              transition
+              focus:border-black
+            "
           />
 
           <p className="mt-2 text-xs text-gray-500">
 
-            detailed listings usually attract better quality applicants
+            detailed listings usually attract higher quality applicants
 
           </p>
 
@@ -120,13 +159,17 @@ looking for someone to manage meta ads for a d2c skincare brand. need support wi
               type="text"
               name="budget"
               placeholder="₹25,000/month or ₹1,500/hour"
-              className="w-full border border-gray-300 px-3 py-2 outline-none"
+              className="
+                w-full border border-gray-300
+                px-3 py-2
+                outline-none
+                transition
+                focus:border-black
+              "
             />
 
             <p className="mt-2 text-xs text-gray-500">
-
-              optional but recommended
-
+              optional but improves response quality
             </p>
 
           </div>
@@ -143,13 +186,17 @@ looking for someone to manage meta ads for a d2c skincare brand. need support wi
               type="text"
               name="timeline"
               placeholder="2 months · ongoing · immediate"
-              className="w-full border border-gray-300 px-3 py-2 outline-none"
+              className="
+                w-full border border-gray-300
+                px-3 py-2
+                outline-none
+                transition
+                focus:border-black
+              "
             />
 
             <p className="mt-2 text-xs text-gray-500">
-
-              mention expected duration
-
+              mention expected duration or urgency
             </p>
 
           </div>
@@ -166,7 +213,14 @@ looking for someone to manage meta ads for a d2c skincare brand. need support wi
 
           <select
             name="category"
-            className="w-full border border-gray-300 bg-white px-3 py-2 outline-none"
+            className="
+              w-full border border-gray-300
+              bg-white
+              px-3 py-2
+              outline-none
+              transition
+              focus:border-black
+            "
             defaultValue=""
           >
 
@@ -226,7 +280,7 @@ looking for someone to manage meta ads for a d2c skincare brand. need support wi
 
         </div>
 
-        {/* LOCATION */}
+        {/* WORK SETUP */}
 
         <div>
 
@@ -236,7 +290,14 @@ looking for someone to manage meta ads for a d2c skincare brand. need support wi
 
           <select
             name="location"
-            className="w-full border border-gray-300 bg-white px-3 py-2 outline-none"
+            className="
+              w-full border border-gray-300
+              bg-white
+              px-3 py-2
+              outline-none
+              transition
+              focus:border-black
+            "
             defaultValue=""
           >
 
@@ -270,11 +331,22 @@ looking for someone to manage meta ads for a d2c skincare brand. need support wi
 
         {/* FOOTER */}
 
-        <div className="border-t border-gray-200 pt-5">
+        <div className="flex items-center justify-between border-t border-gray-200 pt-5">
+
+          <p className="text-xs text-gray-500">
+            listings are public once published, you can edit them later
+          </p>
 
           <button
             type="submit"
-            className="text-sm hover:underline"
+            className="
+              border border-black
+              bg-black
+              px-4 py-2
+              text-sm text-white
+              transition
+              hover:opacity-90
+            "
           >
             publish listing
           </button>

@@ -39,7 +39,7 @@ export default async function FeedIntro() {
             </span>
 
             <span>
-              escape the corporate swamps
+              find your waters
             </span>
 
           </div>
@@ -67,9 +67,7 @@ export default async function FeedIntro() {
             "
           >
 
-            built for ad operators, marketers,
-            media buyers, editors, strategists,
-            creators and internet talent.
+            built for ad operators, marketers, media buyers, editors, strategists, creators and internet talent.
 
           </p>
 
@@ -79,7 +77,7 @@ export default async function FeedIntro() {
 
         {/* RIGHT */}
 
-        <div className="flex w-full justify-end md:w-auto md:justify-start shrink-0">
+        <div className="w-full justify-end md:w-auto md:justify-start shrink-0 hidden md:block">
 
           <LiveCurrentsShell>
             <LiveCurrents />

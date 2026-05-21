@@ -164,7 +164,7 @@ export default function SearchStrip({
           <div className="flex flex-wrap items-center gap-2 text-gray-600">
 
             <span>
-              viewing:
+              showing results for:
             </span>
 
             {query && (

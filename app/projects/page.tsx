@@ -26,7 +26,7 @@ export default async function ProjectsPage() {
           </h1>
 
           <p className="mt-1 text-sm text-gray-500">
-            explore active listings
+            explore all active listings
           </p>
         </div>
 
@@ -69,13 +69,13 @@ export default async function ProjectsPage() {
       href={`/u/${project.user.username}`}
       className="hover:underline"
     >
-      {project.user.name || "anonymous"}
+      {project.user.username || "anonymous"}
     </Link>
 
   ) : (
 
     <span>
-      {project.user.name || "anonymous"}
+      {project.user.username || "anonymous"}
     </span>
 
   )}
@@ -127,7 +127,7 @@ export default async function ProjectsPage() {
 
                 {project.timeline && (
                   <span className="border border-gray-300 bg-gray-50 px-2 py-1">
-                    {project.timeline}
+                    scope: {project.timeline}
                   </span>
                 )}
 

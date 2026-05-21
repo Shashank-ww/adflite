@@ -60,7 +60,7 @@ export default async function SettingsPage() {
         </h1>
 
         <p className="mt-2 text-sm text-gray-500">
-          manage your swamp identity,
+          manage your identity,
           visibility, listings and preferences
         </p>
 
@@ -386,7 +386,7 @@ export default async function SettingsPage() {
           <div className="mb-5">
 
             <h2 className="font-bold">
-              swamp identity
+              habitat identity
             </h2>
 
             <p className="mt-1 text-xs text-gray-500">

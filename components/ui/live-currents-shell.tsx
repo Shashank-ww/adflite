@@ -67,7 +67,7 @@ export default function LiveCurrentsShell({
             "
           >
 
-            backcurrents
+            nerdy nuf?
 
           </p>
 

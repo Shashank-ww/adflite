@@ -168,7 +168,7 @@ export default async function PingsPage() {
                                   <span className="font-semibold">
 
                                     {ping.sender
-                                      ?.name ||
+                                      ?.username ||
                                       "anonymous"}
 
                                   </span>{" "}

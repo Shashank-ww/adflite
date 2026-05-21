@@ -34,39 +34,45 @@ type Props = {
       applications: number;
     };
 
-    applications: {
-      id: string;
+    savedProjects?: {
       userId: string;
     }[];
 
-    savedProjects: {
-      id: string;
+    applications?: {
       userId: string;
     }[];
 
     user: {
       id: string;
       name: string | null;
-      username: string | null;
+      username: string |null;
       email: string | null;
       image: string | null;
       headline: string | null;
     };
   };
 
-sessionUserId?: string | null;
-sessionUserEmail?: string | null;
+  sessionUserId?: string | null;
+  sessionUserEmail?: string | null;
+
+  variant?: "feed" | "detail";
 };
 
 export default function ProjectCard({
   project,
   sessionUserId,
   sessionUserEmail,
+  variant = "feed",
 }: Props) {
   const [pending, startTransition] =
     useTransition();
 
     const [saving, setSaving] = useState(false);
+
+    const shareUrl =
+  typeof window !== "undefined"
+    ? window.location.href
+    : "";
 
 const initialSaved =
   project.savedProjects?.some(
@@ -246,13 +252,13 @@ async function handleApply() {
 
           {project.budget && (
             <span className="border border-gray-300 px-2 py-1 text-gray-700">
-              {project.budget}/hr
+              budget: {project.budget}
             </span>
           )}
 
           {project.timeline && (
             <span className="border border-gray-300 px-2 py-1 text-gray-700">
-              {project.timeline}
+              scope: {project.timeline}
             </span>
           )}
 
@@ -300,17 +306,27 @@ async function handleApply() {
               |
             </span>
 
-            {/* PING */}
+           {/* PING */}
             <button
-              onClick={() => {
-                  if (!session) {
-                    showToast(
-                      "login required to ping"
-                    );
-                    return;
-                  }
-                  handlePing();
-                }}
+              onClick={async () => {
+
+                if (!session) {
+                  showToast(
+                    "login required to ping"
+                  );
+                  return;
+                }
+                try {
+                  await handlePing();
+                  showToast(
+                    `you pinged @${project.user.username}`
+                  );
+                } catch {
+                  showToast(
+                    "unable to send ping"
+                  );
+                }
+              }}
               disabled={pending}
               className="text-gray-600 hover:underline"
             >
@@ -373,19 +389,19 @@ async function handleApply() {
               </button>
             </form>
 
-            <span className="text-gray-300">
-              |
-            </span>
-
-            <Link
-              href={`/projects/${project.slug}`}
-              className="text-gray-600 hover:underline"
-            >
-              details
-            </Link>
-
-            {!isOwner && (
+            {variant === "feed" && !isOwner && (
               <>
+              <span className="text-gray-300">
+                |
+              </span>
+
+              <Link
+                href={`/projects/${project.slug}`}
+                className="text-gray-600 hover:underline"
+              >
+                details
+              </Link>
+
                 <span className="text-gray-300">
                   |
                 </span>
@@ -398,8 +414,9 @@ async function handleApply() {
                 </Link>
               </>
             )}
+            
 
-            {isOwner && (
+            {variant === "detail" && isOwner && (
               <>
                 <span className="text-gray-300">
                   |
@@ -428,6 +445,57 @@ async function handleApply() {
                 </button>
               </>
             )}
+
+  {/* ONLY DETAIL VIEW */}
+  {variant === "detail" && (
+    <>
+
+      { !isOwner && (
+        <>
+          <span className="text-gray-300">|</span>
+
+          <Link
+            href={`/messages?user=${project.user.id}`}
+            className="text-gray-600 hover:underline"
+          >
+            message
+          </Link>
+        </>
+      )}
+
+      <span className="text-gray-300">|</span>
+
+      <button
+        onClick={() => {
+          navigator.clipboard.writeText(window.location.href);
+          showToast("link copied");
+        }}
+        className="text-gray-600 hover:underline"
+      >
+        copy link
+      </button>
+
+      <span className="text-gray-300">|</span>
+
+      <button
+        onClick={() => {
+          if (navigator.share) {
+            navigator.share({
+              title: project.title,
+              url: window.location.href,
+            });
+          } else {
+            navigator.clipboard.writeText(window.location.href);
+            showToast("link copied");
+          }
+        }}
+        className="text-gray-600 hover:underline"
+      >
+        share
+      </button>
+
+    </>
+  )}
 
           </div>
 

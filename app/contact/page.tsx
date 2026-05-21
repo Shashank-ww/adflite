@@ -1,8 +1,11 @@
+import { OrigamiIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function ContactPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-6">
+
+      {/* HEADER */}
 
       <div className="mb-6 flex items-center justify-between">
 
@@ -13,19 +16,27 @@ export default function ContactPage() {
           </h1>
 
           <p className="mt-1 text-sm text-gray-500">
-            support, partnerships, and queries
+            support, partnerships, collaboration, and habitat queries
           </p>
 
         </div>
 
         <Link
           href="/projects"
-          className="border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
+          className="
+            border border-gray-300
+            px-4 py-2
+            text-sm
+            transition
+            hover:bg-gray-50
+          "
         >
           back to listings
         </Link>
 
       </div>
+
+      {/* CONTACT */}
 
       <div className="border border-gray-300 bg-white">
 
@@ -33,8 +44,10 @@ export default function ContactPage() {
 
           <p>
             for support, listing issues, partnerships,
-            takedowns, or general platform queries,
-            reach out anytime. we are for real.
+            collaborations, moderation concerns, takedowns,
+            contributor interest, or general platform queries. 
+            we are open for all and real humans at work.
+            reach out anytime. 
           </p>
 
           <div className="border border-gray-300 p-4">
@@ -46,8 +59,320 @@ export default function ContactPage() {
           </div>
 
           <p className="text-gray-600">
-            response times may vary depending on request volume.
+            response times may vary depending on habitat activity.
           </p>
+
+        </div>
+
+      </div>
+
+      {/* FOUNDER LETTER */}
+
+            <div className="border mt-8 border-gray-300 bg-white">
+
+<div className="mx-auto flex w-full justify-center px-4 py-10 sm:px-8">
+
+  {/* NOTEBOOK SHEET */}
+
+<div
+  className="
+    relative
+    w-full
+    max-w-3xl
+    overflow-hidden
+    rotate-[-0.4deg]
+    border-r border-b border-t border-[#d6d3c7]
+    bg-[#f8f6ee]
+  "
+>
+
+    {/* SPIRAL HOLES */}
+
+    <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center justify-around border-r border-[#d8d8cf] bg-[#f3f1e8]">
+
+      {Array.from({ length: 24 }).map((_, i) => (
+        <div
+          key={i}
+          className="
+            h-4 w-4
+            rounded-full
+            border border-[#d6d6cd]
+            bg-white
+            -translate-x-2/3
+          "
+        />
+      ))}
+
+    </div>
+
+    {/* PAPER TEXTURE */}
+
+    <div
+      className="
+        relative
+        ml-6
+        px-8 py-10
+      "
+    >
+
+      {/* TOP LABEL */}
+
+      <div className="mb-10 border-b border-dashed border-[#d8d5c7] pb-6">
+
+        <p className="mb-3 text-xs uppercase tracking-[0.25em] text-gray-500">
+          letter from the founder
+        </p>
+
+        <h2 className="text-3xl font-semibold leading-tight text-[#1f1f1b]">
+          why switchwaters.com exists
+        </h2>
+
+      </div>
+
+      {/* LETTER */}
+
+      <div className="space-y-4 text-lg leading-8 text-[#2d2d28]">
+
+        <p>
+          there&apos;s a strange moment we feel right after the college.
+        </p>
+
+        <p>
+          the structure disappears.
+          the guidance stops.
+          and suddenly nobody tells you where to go anymore.
+        </p>
+
+        <p>
+          you realize the degree was not the destination,
+          landing that first internship was not the plan,
+          and the “career ladder” was mostly a story repeated so often
+          that everyone accepted it as truth.
+        </p>
+
+        <p>
+          i learnt this the hard way.
+        </p>
+
+        <p>
+          i couldn&apos;t complete engineering.
+          at that point in life, it felt humiliating,
+          not because i lacked effort,
+          but because i lacked direction.
+        </p>
+
+        <p>
+          and nobody really prepares you for that feeling.
+        </p>
+
+        <p>
+          schools prepare people to pass.
+          corporates prepare people to produce.
+          they trust you after a degree is because you have a degree that proves your stability at one place.
+          job platforms prepare people to apply.
+        </p>
+
+        <p>
+          but very few systems help people understand:
+        </p>
+
+        <ul className="ml-4 list-disc space-y-2 text-[#44443d]">
+
+          <li>who they are</li>
+
+          <li>how they work</li>
+
+          <li>where they belong</li>
+
+          <li>how to move through uncertainty</li>
+
+        </ul>
+
+        <p>
+          eventually i realized people are not failing because
+          they are incapable.
+        </p>
+
+        <p>
+          they are failing because they are navigating ecosystems
+          they were never taught to understand.
+        </p>
+
+        <p>
+          that became the beginning of switchwaters.
+        </p>
+
+        <p>
+          not as another social network.
+          not as another hiring funnel.
+          not as another freelance bidding marketplace.
+        </p>
+
+        <p>
+          but as a habitat. where people do what they do best. fend for themselves.
+        </p>
+
+        <p>
+          a place where opportunities move like currents,
+          industries like jungles, prey and predators together.
+          where hidden paths matter,
+          and people more than resumes.
+        </p>
+
+        <p>
+          this platform is for people in motion:
+          freelancers, operators, creatives, founders,
+          specialists, explorers, builders, and teams trying
+          to find aligned work in changing waters.
+        </p>
+
+        <p>
+          switchwaters is being built openly,
+          honestly, and continuously with the people using it.
+        </p>
+
+        <p>
+          if you share the same vision,
+          welcome to the switchwaters habitat.
+        </p>
+
+        {/* SIGN */}
+
+        <div className="pt-10">
+
+          <div className="inline-block border-t border-[#c8c5b7] pt-4">
+
+            <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
+              — founder
+            </p>
+
+            <Link
+              href="/"
+              className="flex text-base mt-3 font-bold tracking-wide gap-1 items-center justify-center"
+            >
+              <OrigamiIcon size={20} />
+
+              <div className="flex items-center">
+                <p className="font-thin">switch</p>
+                <p className="font-bold">waters</p>
+                <span className="text-neutral-400">.com</span>
+              </div>
+            </Link>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+</div>
+
+      {/* OPEN HABITAT */}
+
+      <div className="mt-8 border border-gray-300 bg-[#eef2e8]">
+
+        <div className="space-y-6 p-6">
+
+          <div>
+
+            <p className="mb-3 text-xs uppercase tracking-[0.2em] text-gray-500">
+              open habitat
+            </p>
+
+            <h2 className="text-2xl font-semibold">
+              help shape switchwaters.com
+            </h2>
+
+          </div>
+
+          <p className="text-sm leading-7 max-w-prose text-gray-800">
+            switchwaters is being built in the open.
+            developers, designers, writers, operators,
+            researchers, moderators, and curious minds
+            are welcome to contribute ideas, improvements,
+            experiments, systems, and feedback.
+          </p>
+
+          <div className="grid gap-4 md:grid-cols-3">
+
+            <div className="border border-gray-300 bg-white p-4">
+
+              <h3 className="font-medium">
+                contribute
+              </h3>
+
+              <p className="mt-3 text-sm leading-7 text-gray-600">
+                suggest features, fixes, ux improvements,
+                workflows, or ecosystem ideas.
+              </p>
+
+            </div>
+
+            <div className="border border-gray-300 bg-white p-4">
+
+              <h3 className="font-medium">
+                collaborate
+              </h3>
+
+              <p className="mt-3 text-sm leading-7 text-gray-600">
+                meaningful contributors may evolve into
+                long-term collaborators or habitat builders.
+              </p>
+
+            </div>
+
+            <div className="border border-gray-300 bg-white p-4">
+
+              <h3 className="font-medium">
+                get featured
+              </h3>
+
+              <p className="mt-3 text-sm leading-7 text-gray-600">
+                early contributors may be credited publicly
+                as part of the habitat archive.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div className="flex flex-wrap gap-4 pt-2">
+
+            <a
+              href="https://github.com/Shashank-ww/adflite.git"
+              target="_blank"
+              rel="noreferrer"
+              className="
+                border border-gray-300
+                bg-neutral-100
+                px-4 py-2
+                text-sm
+                text-white
+                transition
+                hover:opacity-90
+              "
+            >
+              explore repository
+            </a>
+
+            <a
+              href="mailto:shash.mbww@gmail.com"
+              className="
+                border border-gray-300
+                px-4 py-2
+                text-sm
+                transition
+                hover:bg-white
+              "
+            >
+              suggest improvements
+            </a>
+
+          </div>
 
         </div>
 

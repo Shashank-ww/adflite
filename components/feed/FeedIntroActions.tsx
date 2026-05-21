@@ -73,7 +73,7 @@ export default function FeedIntroActions() {
         "
       >
 
-        browse listings
+        browse projects
 
       </Link>
 

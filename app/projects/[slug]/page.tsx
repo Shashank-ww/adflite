@@ -1,8 +1,14 @@
-import { prisma } from "@/lib/prisma";
-
 import Link from "next/link";
 
 import { notFound } from "next/navigation";
+
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
+
+import { prisma } from "@/lib/prisma";
+
+import ProjectCard from "@/components/cards/ProjectCard";
 
 type Props = {
   params: Promise<{
@@ -13,7 +19,12 @@ type Props = {
 export default async function ProjectDetailsPage({
   params,
 }: Props) {
-  const { slug } = await params;
+
+  const session =
+    await getServerSession(authOptions);
+
+  const { slug } =
+    await params;
 
   const project =
     await prisma.project.findUnique({
@@ -21,16 +32,59 @@ export default async function ProjectDetailsPage({
         slug,
       },
 
-      include: {
-        user: true,
+      select: {
+        id: true,
+        slug: true,
 
-        applications: {
-          include: {
-            user: true,
+        title: true,
+        description: true,
+
+        budget: true,
+        timeline: true,
+        category: true,
+        location: true,
+
+        createdAt: true,
+
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            image: true,
+            headline: true,
           },
         },
 
-        pings: true,
+        _count: {
+          select: {
+            pings: true,
+            applications: true,
+          },
+        },
+
+        ...(session?.user?.id && {
+          savedProjects: {
+            where: {
+              userId: session.user.id,
+            },
+
+            select: {
+              userId: true,
+            },
+          },
+
+          applications: {
+            where: {
+              userId: session.user.id,
+            },
+
+            select: {
+              userId: true,
+            },
+          },
+        }),
       },
     });
 
@@ -39,99 +93,45 @@ export default async function ProjectDetailsPage({
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-6">
+    <main className="mx-auto max-w-5xl px-4 py-6">
 
-      <div className="mb-4">
+      {/* TOPBAR */}
+
+      <div className="mb-6 flex items-center justify-between">
 
         <Link
           href="/"
-          className="text-sm hover:underline"
+          className="text-sm text-gray-600 hover:text-black hover:underline"
         >
           ← back home
         </Link>
 
+        <div className="flex items-center gap-2">
+
+
+        <Link
+          href="/post"
+          className="border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
+        >
+          + post project
+        </Link>
+
+        </div>
+
       </div>
 
-      <article className="border border-gray-200 bg-white p-6">
+      {/* PROJECT */}
 
-        <div className="mb-6 flex items-start justify-between gap-4">
-
-          <div>
-
-            <h1 className="text-2xl font-bold">
-              {project.title}
-            </h1>
-
-<p className="mt-2 text-sm text-gray-500">
-
-  posted by{" "}
-
-  {project.user.username ? (
-
-    <Link
-      href={`/u/${project.user.username}`}
-      className="hover:underline"
-    >
-      {project.user.username || "anonymous"}
-    </Link>
-
-  ) : (
-
-    <span>
-      {project.user.username || "anonymous"}
-    </span>
-
-  )}
-
-</p>
-
-          </div>
-
-          <div className="text-right text-xs text-gray-500">
-
-            <p>
-              {new Date(
-                project.createdAt
-              ).toLocaleDateString()}
-            </p>
-
-            <p className="mt-2">
-              {project.pings.length} pings
-            </p>
-
-          </div>
-
-        </div>
-
-        <div className="mb-6 flex flex-wrap gap-2 text-xs">
-
-          {project.category && (
-            <span className="rounded-full border border-gray-300 px-3 py-1">
-              {project.category}
-            </span>
-          )}
-
-          {project.budget && (
-            <span className="rounded-full border border-gray-300 px-3 py-1">
-              budget: {project.budget}
-            </span>
-          )}
-
-          {project.timeline && (
-            <span className="rounded-full border border-gray-300 px-3 py-1">
-              {project.timeline}
-            </span>
-          )}
-
-        </div>
-
-        <div className="whitespace-pre-line leading-7 text-gray-800">
-
-          {project.description}
-
-        </div>
-
-      </article>
+      <ProjectCard
+        variant="detail"
+        project={project}
+        sessionUserId={
+          session?.user?.id ?? null
+        }
+        sessionUserEmail={
+          session?.user?.email ?? null
+        }
+      />
 
     </main>
   );
