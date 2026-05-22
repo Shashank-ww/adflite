@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { useRouter } from "next/navigation";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useToast } from "@/components/providers/ToastProvider";
 
@@ -47,6 +47,7 @@ const categories = [
 
 type Props = {
   query?: string;
+
   category?: string;
 };
 
@@ -57,10 +58,24 @@ export default function SearchStrip({
 
   const router = useRouter();
 
-  const { showToast } = useToast();
+  const { showToast } =
+    useToast();
 
   const [search, setSearch] =
     useState(query || "");
+
+  const activeCategory =
+    category || "all";
+
+  const activeLabel =
+    useMemo(() => {
+
+      return categories.find(
+        (c) =>
+          c.value === activeCategory
+      )?.label;
+
+    }, [activeCategory]);
 
   function handleSearch(
     e: React.FormEvent<HTMLFormElement>
@@ -68,27 +83,42 @@ export default function SearchStrip({
 
     e.preventDefault();
 
-    showToast(
-      "diving into the swamps..."
-    );
-
     const trimmed =
       search.trim();
 
-    // SEARCH SHOULD STAND ALONE
-    if (trimmed) {
+    if (!trimmed) {
 
       router.push(
-        `/?q=${encodeURIComponent(
-          trimmed
-        )}`
+        activeCategory !== "all"
+          ? `/?category=${activeCategory}`
+          : "/"
       );
 
       return;
     }
 
-    // EMPTY SEARCH RETURNS HOME
-    router.push("/");
+    showToast(
+      "diving into the swamps..."
+    );
+
+    const params =
+      new URLSearchParams();
+
+    params.set("q", trimmed);
+
+    if (
+      activeCategory &&
+      activeCategory !== "all"
+    ) {
+      params.set(
+        "category",
+        activeCategory
+      );
+    }
+
+    router.push(
+      `/?${params.toString()}`
+    );
   }
 
   function handleReset() {
@@ -106,6 +136,7 @@ export default function SearchStrip({
     <section className="border-b border-gray-300 bg-neutral-100">
 
       {/* SEARCH */}
+
       <form
         onSubmit={handleSearch}
         className="border-b border-gray-300 p-3"
@@ -115,7 +146,6 @@ export default function SearchStrip({
 
           <input
             type="text"
-            name="q"
             value={search}
             onChange={(e) =>
               setSearch(
@@ -126,11 +156,9 @@ export default function SearchStrip({
             className="
               min-w-0
               flex-1
-              border
-              border-gray-400
+              border border-gray-400
               bg-white
-              px-3
-              py-2
+              px-3 py-2
               text-sm
               text-black
               outline-none
@@ -140,13 +168,10 @@ export default function SearchStrip({
           <button
             type="submit"
             className="
-              border
-              border-gray-400
+              border border-gray-400
               bg-white
-              px-4
-              py-2
+              px-4 py-2
               text-sm
-              text-black
               hover:bg-gray-100
             "
           >
@@ -157,37 +182,54 @@ export default function SearchStrip({
 
       </form>
 
-      {/* ACTIVE VIEW */}
-      {(query || category) && (
-        <div className="flex items-center justify-between border-b border-gray-300 bg-white px-3 py-2 text-xs">
+      {/* ACTIVE STATE */}
+
+      {(query ||
+        activeCategory !== "all") && (
+        <div
+          className="
+            flex flex-wrap
+            items-center
+            justify-between
+            gap-3
+            border-b border-gray-300
+            bg-white
+            px-3 py-2
+            text-xs
+          "
+        >
 
           <div className="flex flex-wrap items-center gap-2 text-gray-600">
 
             <span>
-              showing results for:
+              showing:
             </span>
 
             {query && (
-              <span className="border border-gray-300 bg-neutral-100 px-2 py-1 font-medium text-black">
-
+              <span
+                className="
+                  border border-gray-300
+                  bg-neutral-100
+                  px-2 py-1
+                  font-medium text-black
+                "
+              >
                 {query}
-
               </span>
             )}
 
-            {category &&
-              category !== "all" && (
-                <span className="border border-blue-700 bg-white px-2 py-1 font-medium text-blue-700">
-
-                  {
-                    category.replaceAll(
-                      "-",
-                      " "
-                    )
-                  }
-
-                </span>
-              )}
+            {activeCategory !== "all" && (
+              <span
+                className="
+                  border border-blue-700
+                  bg-blue-50
+                  px-2 py-1
+                  font-medium text-blue-700
+                "
+              >
+                {activeLabel}
+              </span>
+            )}
 
           </div>
 
@@ -201,26 +243,45 @@ export default function SearchStrip({
               hover:underline
             "
           >
-            clear
+            clear filters
           </button>
 
         </div>
       )}
 
-      {/* FILTERS */}
+      {/* CATEGORY FILTERS */}
+
       <div className="flex flex-wrap gap-2 p-3 text-xs">
 
         {categories.map((item) => {
 
           const isActive =
-            (item.value === "all" &&
-              !category) ||
-            category === item.value;
+            activeCategory ===
+            item.value;
+
+          const params =
+            new URLSearchParams();
+
+          if (
+            item.value !== "all"
+          ) {
+            params.set(
+              "category",
+              item.value
+            );
+          }
+
+          if (query) {
+            params.set(
+              "q",
+              query
+            );
+          }
 
           const href =
-            item.value === "all"
-              ? "/"
-              : `/?category=${item.value}`;
+            params.toString()
+              ? `/?${params.toString()}`
+              : "/";
 
           return (
             <Link
@@ -228,15 +289,13 @@ export default function SearchStrip({
               href={href}
               className={`
                 border
-                px-2
-                py-1
+                px-2 py-1
                 transition
-                hover:bg-white
 
                 ${
                   isActive
-                    ? "border-blue-700 bg-white font-medium text-blue-700"
-                    : "border-gray-300 text-black"
+                    ? "border-blue-700 bg-blue-50 font-medium text-blue-700"
+                    : "border-gray-300 bg-white text-black hover:bg-gray-50"
                 }
               `}
             >

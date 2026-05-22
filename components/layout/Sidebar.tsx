@@ -1,162 +1,228 @@
 import Link from "next/link";
 
-export default function Sidebar() {
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
+
+const categories = [
+  {
+    label: "media buying",
+    href: "/?category=media-buying",
+  },
+
+  {
+    label: "editing",
+    href: "/?category=editing",
+  },
+
+  {
+    label: "ugc creators",
+    href: "/?category=ugc-creators",
+  },
+
+  {
+    label: "analytics",
+    href: "/?category=analytics",
+  },
+
+  {
+    label: "copywriting",
+    href: "/?category=copywriting",
+  },
+
+  {
+    label: "design",
+    href: "/?category=design",
+  },
+];
+
+export default async function Sidebar() {
+
+  const session =
+    await getServerSession(authOptions);
+
   return (
-    <aside className="hidden w-56 shrink-0 md:block">
+    <aside className="hidden w-60 shrink-0 lg:block">
 
-      <div className="sticky top-4 border border-gray-300 bg-white p-4 text-sm">
+      <div
+        className="
+          sticky top-4
+          overflow-hidden
+          border border-gray-300
+          bg-white
+        "
+      >
 
-        {/* BROWSE */}
+        {/* ACTION */}
 
-        <div className="mb-5">
+        <div className="border-b border-gray-200 p-4">
 
-          <p className="mb-2 font-bold">
-            browse
+          <Link
+            href="/about"
+            className="
+              flex items-center
+              justify-center
+              border border-gray-300
+              bg-blue-50
+              px-4 py-2
+              text-sm
+              transition
+              hover:bg-white
+            "
+          >
+            explore site
+          </Link>
+
+        </div>
+
+        {/* WORKSPACE */}
+
+        {session && (
+
+          <div className="border-b border-gray-200 p-4">
+
+            <p
+              className="
+                mb-3
+                text-xs
+                font-semibold
+                uppercase
+                tracking-wide
+                text-gray-500
+              "
+            >
+              workspace
+            </p>
+
+            <nav className="flex flex-col text-sm">
+
+              <Link
+                href="/projects"
+                className="
+                  border-b border-gray-100
+                  py-2
+                  hover:text-black
+                "
+              >
+                my projects
+              </Link>
+
+              <Link
+                href="/applications"
+                className="
+                  border-b border-gray-100
+                  py-2
+                  hover:text-black
+                "
+              >
+                applications
+              </Link>
+
+              <Link
+                href="/saved"
+                className="
+                  border-b border-gray-100
+                  py-2
+                  hover:text-black
+                "
+              >
+                saved listings
+              </Link>
+
+              <Link
+                href="/messages"
+                className="
+                  border-b border-gray-100
+                  py-2
+                  hover:text-black
+                "
+              >
+                messages
+              </Link>
+
+              <Link
+                href="/pings"
+                className="
+                  py-2
+                  hover:text-black
+                "
+              >
+                pings
+              </Link>
+
+            </nav>
+
+          </div>
+
+        )}
+
+        {/* DISCOVER */}
+
+        <div className="border-b border-gray-200 p-4">
+
+          <p
+            className="
+              mb-3
+              text-xs
+              font-semibold
+              uppercase
+              tracking-wide
+              text-gray-500
+            "
+          >
+            discover
           </p>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap gap-2">
 
             <Link
               href="/"
-              className="hover:underline"
+              className="
+                border border-gray-300
+                px-2 py-1
+                text-xs
+                hover:bg-gray-50
+              "
             >
-              all listings
+              all
             </Link>
 
-            <Link
-              href="/?category=media-buying"
-              className="hover:underline"
-            >
-              media buying
-            </Link>
-
-            <Link
-              href="/?category=editing"
-              className="hover:underline"
-            >
-              editing
-            </Link>
-
-            <Link
-              href="/?category=ugc-creators"
-              className="hover:underline"
-            >
-              ugc creators
-            </Link>
-
-            <Link
-              href="/?category=analytics"
-              className="hover:underline"
-            >
-              analytics
-            </Link>
-
-            <Link
-              href="/?category=copywriting"
-              className="hover:underline"
-            >
-              copywriting
-            </Link>
-
-            <Link
-              href="/?category=design"
-              className="hover:underline"
-            >
-              design
-            </Link>
+            {categories.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="
+                  border border-gray-300
+                  px-2 py-1
+                  text-xs
+                  hover:bg-gray-50
+                "
+              >
+                {item.label}
+              </Link>
+            ))}
 
           </div>
 
         </div>
 
-        {/* ACCOUNT */}
+        {/* SIGN OFF */}
 
-        <div className="mb-5">
+        <div className="p-4">
 
-          <p className="mb-2 font-bold">
-            account
+          <p className="text-xs leading-5 text-gray-500">
+
+            independent by nature.
+            <br />
+            simple on purpose.
+
           </p>
 
-          <div className="flex flex-col gap-2">
+          <p className="mt-3 text-[11px] text-gray-400">
 
-            <Link
-              href="/projects"
-              className="hover:underline"
-            >
-              my projects
-            </Link>
+            &copy; 2026 switchwaters.com
 
-            <Link
-              href="/applications"
-              className="hover:underline"
-            >
-              applications
-            </Link>
-
-            <Link
-              href="/saved"
-              className="hover:underline"
-            >
-              saved listings
-            </Link>
-
-            <Link
-              href="/messages"
-              className="hover:underline"
-            >
-              messages
-            </Link>
-
-            <Link
-              href="/pings"
-              className="hover:underline"
-            >
-              pings
-            </Link>
-
-          </div>
-
-        </div>
-
-        {/* REMOTE */}
-
-        <div>
-
-          <p className="mb-2 font-bold">
-            remote
           </p>
-
-          <div className="flex flex-col gap-2">
-
-            <Link
-              href="/?location=india"
-              className="hover:underline"
-            >
-              india
-            </Link>
-
-            <Link
-              href="/?location=global"
-              className="hover:underline"
-            >
-              global
-            </Link>
-
-            <Link
-              href="/?timeline=part-time"
-              className="hover:underline"
-            >
-              part-time
-            </Link>
-
-            <Link
-              href="/?timeline=contract"
-              className="hover:underline"
-            >
-              contract
-            </Link>
-
-          </div>
 
         </div>
 

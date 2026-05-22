@@ -10,14 +10,21 @@ import { prisma } from "@/lib/prisma";
 
 import ProjectCard from "@/components/cards/ProjectCard";
 
+import ApplyForm from "@/components/layout/ApplyForm";
+
 type Props = {
   params: Promise<{
     slug: string;
   }>;
+
+  searchParams: Promise<{
+    apply?: string;
+  }>;
 };
 
-export default async function ProjectDetailsPage({
+export default async function ProjectDetailPage({
   params,
+  searchParams,
 }: Props) {
 
   const session =
@@ -25,6 +32,12 @@ export default async function ProjectDetailsPage({
 
   const { slug } =
     await params;
+
+  const query =
+    await searchParams;
+
+  const autoOpenApply =
+    query.apply === "1";
 
   const project =
     await prisma.project.findUnique({
@@ -49,10 +62,13 @@ export default async function ProjectDetailsPage({
         user: {
           select: {
             id: true,
+
             name: true,
             username: true,
             email: true,
+
             image: true,
+
             headline: true,
           },
         },
@@ -67,7 +83,8 @@ export default async function ProjectDetailsPage({
         ...(session?.user?.id && {
           savedProjects: {
             where: {
-              userId: session.user.id,
+              userId:
+                session.user.id,
             },
 
             select: {
@@ -77,7 +94,8 @@ export default async function ProjectDetailsPage({
 
           applications: {
             where: {
-              userId: session.user.id,
+              userId:
+                session.user.id,
             },
 
             select: {
@@ -92,46 +110,144 @@ export default async function ProjectDetailsPage({
     notFound();
   }
 
+  const alreadyApplied =
+    project.applications?.some(
+      (
+        a: {
+          userId: string;
+        }
+      ) =>
+        a.userId ===
+        session?.user?.id
+    ) ?? false;
+
+  const isOwner =
+    session?.user?.email ===
+    project.user.email;
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-6">
 
-      {/* TOPBAR */}
+      {/* TOP BAR */}
 
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center gap-3 text-sm">
 
         <Link
           href="/"
-          className="text-sm text-gray-600 hover:text-black hover:underline"
+          className="text-gray-600 hover:underline"
         >
-          ← back home
+          ← back
         </Link>
 
-        <div className="flex items-center gap-2">
+        {autoOpenApply &&
+          !alreadyApplied &&
+          !isOwner && (
+            <>
+              <span className="text-gray-300">
+                |
+              </span>
 
-
-        <Link
-          href="/post"
-          className="border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
-        >
-          + post project
-        </Link>
-
-        </div>
+              <Link
+                href={`/projects/${project.slug}`}
+                className="text-red-600 hover:underline"
+              >
+                cancel apply
+              </Link>
+            </>
+          )}
 
       </div>
 
+      {/* APPLIED SUCCESS */}
+
+      {alreadyApplied && (
+        <div
+          className="
+            mb-4 border
+            border-green-300
+            bg-green-50
+            px-4 py-3
+            text-sm text-green-800
+          "
+        >
+          Great! You have applied to{" "}
+
+          <span className="font-bold">
+            {project.title}
+          </span>
+        </div>
+      )}
+
       {/* PROJECT */}
 
-      <ProjectCard
-        variant="detail"
-        project={project}
-        sessionUserId={
-          session?.user?.id ?? null
-        }
-        sessionUserEmail={
-          session?.user?.email ?? null
-        }
-      />
+      <section
+        className="
+          overflow-hidden
+          border border-gray-300
+          bg-white
+        "
+      >
+        <ProjectCard
+          project={project}
+          variant="detail"
+          sessionUserId={
+            session?.user?.id ?? null
+          }
+          sessionUserEmail={
+            session?.user?.email ?? null
+          }
+        />
+      </section>
+
+      {/* APPLY FORM */}
+
+      {autoOpenApply &&
+        !alreadyApplied &&
+        !isOwner && (
+          <section
+            className="
+              mt-6 overflow-hidden
+              border border-gray-300
+              bg-white
+            "
+          >
+
+            <div
+              className="
+                border-b border-gray-200
+                px-4 py-3
+              "
+            >
+
+              <h2 className="text-sm font-semibold">
+
+                apply to this project
+
+              </h2>
+
+              <p className="mt-1 text-xs text-gray-500">
+
+                your profile will be shared
+                with the project owner
+
+              </p>
+
+            </div>
+
+            <ApplyForm
+              projectId={project.id}
+              projectSlug={project.slug}
+              projectTitle={project.title}
+              applicantName={
+                session?.user?.name
+              }
+              applicantEmail={
+                session?.user?.email
+              }
+            />
+
+          </section>
+        )}
 
     </main>
   );

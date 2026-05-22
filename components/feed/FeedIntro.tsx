@@ -47,6 +47,7 @@ export default async function FeedIntro() {
           <h1
             className="
               mt-2
+              max-w-prose
               text-2xl font-bold leading-tight text-blue-950
               sm:text-3xl
               md:text-4xl
@@ -62,7 +63,7 @@ export default async function FeedIntro() {
             className="
               mt-3
               max-w-prose
-              text-sm leading-6 text-blue-900
+              text-base leading-6 text-blue-900
               sm:text-balance
             "
           >

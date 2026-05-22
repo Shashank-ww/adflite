@@ -2,9 +2,18 @@
 
 import Link from "next/link";
 
-import { useState, useEffect, useTransition } from "react";
+import {
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 
-import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+import {
+  signIn,
+  useSession,
+} from "next-auth/react";
 
 import {
   deleteProject,
@@ -12,13 +21,19 @@ import {
 } from "@/actions/projectActions";
 
 import { pingProject } from "@/actions/pingActions";
-import ApplyForm from "@/components/layout/ApplyForm";
+
 import { useToast } from "@/components/providers/ToastProvider";
+
+type Variant =
+  | "feed"
+  | "directory"
+  | "detail";
 
 type Props = {
   project: {
     id: string;
     slug: string;
+
     title: string;
     description: string;
 
@@ -44,18 +59,22 @@ type Props = {
 
     user: {
       id: string;
+
       name: string | null;
-      username: string |null;
+      username: string | null;
       email: string | null;
+
       image: string | null;
+
       headline: string | null;
     };
   };
 
   sessionUserId?: string | null;
+
   sessionUserEmail?: string | null;
 
-  variant?: "feed" | "detail";
+  variant?: Variant;
 };
 
 export default function ProjectCard({
@@ -64,82 +83,100 @@ export default function ProjectCard({
   sessionUserEmail,
   variant = "feed",
 }: Props) {
+  const router = useRouter();
+
+  const { showToast } = useToast();
+
+  const { data: session } =
+    useSession();
+
   const [pending, startTransition] =
     useTransition();
 
-    const [saving, setSaving] = useState(false);
-
-    const shareUrl =
-  typeof window !== "undefined"
-    ? window.location.href
-    : "";
-
-const initialSaved =
-  project.savedProjects?.some(
-    (s) => s.userId === sessionUserId
-  );
-
-const [saved, setSaved] =
-  useState(initialSaved);
-
-  useEffect(() => {
-  setSaved(initialSaved);
-}, [initialSaved]);
-
-  const [applied, setApplied] =
-    useState(
-      project.applications?.some(
-        (a) => a.userId === sessionUserId
-      )
-    );
-
-const { showToast } = useToast();
-
-const { data: session } = useSession();
-
-const [showApplyForm, setShowApplyForm] =
-  useState(false);
-
-const [pingCount, setPingCount] =
-  useState(project._count.pings);
+  const [saving, setSaving] =
+    useState(false);
 
   const isOwner =
     sessionUserEmail ===
     project.user.email;
 
-    async function handleSave() {
-      if (!sessionUserId) {
-        signIn("google");
-        return;
-      }
+  /*
+   ---------------------------------------
+   SAVED
+   ---------------------------------------
+  */
 
-      const next = !saved;
+  const initialSaved =
+    project.savedProjects?.some(
+      (s) =>
+        s.userId === sessionUserId
+    ) ?? false;
 
-      // optimistic
-      setSaved(next);
+  const [saved, setSaved] =
+    useState(initialSaved);
 
-      setSaving(true);
+  useEffect(() => {
+    setSaved(initialSaved);
+  }, [initialSaved]);
 
-      try {
-        await saveProject(project.id);
-      } catch {
-        // rollback
-        setSaved(!next);
-      } finally {
-        setSaving(false);
-      }
+  /*
+   ---------------------------------------
+   APPLIED
+   ---------------------------------------
+  */
+
+  const [applied] = useState(
+    project.applications?.some(
+      (a) =>
+        a.userId === sessionUserId
+    ) ?? false
+  );
+
+  /*
+   ---------------------------------------
+   PINGS
+   ---------------------------------------
+  */
+
+  const [pingCount, setPingCount] =
+    useState(project._count.pings);
+
+  /*
+   ---------------------------------------
+   ACTIONS
+   ---------------------------------------
+  */
+
+  async function handleSave() {
+    if (!sessionUserId) {
+      signIn("google");
+      return;
     }
 
-async function handleApply() {
-  if (!sessionUserId) {
-    signIn("google");
-    return;
+    const next = !saved;
+
+    setSaved(next);
+
+    setSaving(true);
+
+    try {
+      await saveProject(project.id);
+
+      showToast(
+        next
+          ? "listing saved"
+          : "listing removed"
+      );
+    } catch {
+      setSaved(!next);
+
+      showToast(
+        "something went wrong"
+      );
+    } finally {
+      setSaving(false);
+    }
   }
-
-  if (applied) return;
-
-  setShowApplyForm((prev) => !prev);
-}
 
   async function handlePing() {
     if (!sessionUserId) {
@@ -152,54 +189,113 @@ async function handleApply() {
     startTransition(async () => {
       try {
         await pingProject(project.id);
+
+        showToast(
+          `you pinged @${project.user.username}`
+        );
       } catch {
         setPingCount((prev) => prev - 1);
+
+        showToast(
+          "unable to send ping"
+        );
       }
     });
   }
 
-  return (
-    <article className="border-t border-gray-400 bg-white hover:bg-amber-50 px-4 py-4 text-sm">
+  function handleApplyIntent() {
+    if (!sessionUserId) {
+      signIn("google");
+      return;
+    }
 
+    if (applied) return;
+
+    router.push(
+      `/projects/${project.slug}?apply=1`
+    );
+  }
+
+  /*
+   ---------------------------------------
+   VARIANT FLAGS
+   ---------------------------------------
+  */
+
+  const isFeed =
+    variant === "feed";
+
+  const isDirectory =
+    variant === "directory";
+
+  const isDetail =
+    variant === "detail";
+
+  const showDescription =
+    isDirectory || isDetail;
+
+  const showFooter =
+    isFeed || isDetail;
+
+  return (
+    <article
+      className="
+        border-t border-gray-300
+        bg-white
+        px-4 py-4
+        text-sm
+        transition
+        hover:bg-amber-50
+      "
+    >
       {/* TOP */}
+
       <div className="flex items-start justify-between gap-4">
+
         <div className="min-w-0 flex-1">
 
           <Link
             href={`/projects/${project.slug}`}
-            className="text-lg font-semibold leading-6 text-black hover:underline"
+            className="
+              text-xl font-semibold
+              leading-6 text-black
+              hover:underline
+            "
           >
             {project.title}
           </Link>
 
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+          {/* META HEADER */}
 
-<p>
+          <div
+            className="
+              mt-1 flex flex-wrap
+              items-center gap-x-2
+              gap-y-1 text-sm
+              text-gray-500
+            "
+          >
+            <p>
+              by{" "}
 
-  by{" "}
-
-  {project.user.username ? (
-
-    <Link
-      href={`/u/${project.user.username}`}
-      className="hover:underline"
-    >
-      {project.user.username || "anonymous"}
-    </Link>
-
-  ) : (
-
-    <span>
-      {project.user.username || "anonymous"}
-    </span>
-
-  )}
-
-</p>
+              {project.user.username ? (
+                <Link
+                  href={`/u/${project.user.username}`}
+                  className="hover:underline"
+                >
+                  {project.user.username}
+                </Link>
+              ) : (
+                <span>
+                  anonymous
+                </span>
+              )}
+            </p>
 
             {project.user.headline && (
               <>
                 <span>·</span>
+
                 <span>
                   {project.user.headline}
                 </span>
@@ -214,172 +310,228 @@ async function handleApply() {
                 {
                   month: "short",
                   day: "numeric",
-                  // year: "numeric",
                 }
               ).format(
-                new Date(project.createdAt)
+                new Date(
+                  project.createdAt
+                )
               )}
             </span>
-
           </div>
         </div>
+
+        {/* DIRECTORY SIDE META */}
+
+        {isDirectory && (
+          <div
+            className="
+              shrink-0 text-right
+              text-xs text-gray-400
+            "
+          >
+            <p>
+              {
+                project._count.pings
+              }{" "}
+              pings
+            </p>
+          </div>
+        )}
       </div>
 
       {/* DESCRIPTION */}
-      <div className="mt-3">
-        <Link
-          href={`/projects/${project.slug}`}
-          className="block"
-        >
-          <p className="line-clamp-4 whitespace-pre-line text-sm leading-6 text-gray-700">
-            {project.description}
-          </p>
-        </Link>
-      </div>
 
-      {/* META */}
+      {showDescription && (
+        <div className="mt-3">
+
+          <Link
+            href={`/projects/${project.slug}`}
+            className="block"
+          >
+            <p
+              className={`
+                whitespace-pre-line
+                text-balance
+                leading-7 text-gray-700
+
+                ${
+                  isDirectory
+                    ? "line-clamp-3"
+                    : ""
+                }
+              `}
+            >
+              {
+                project.description
+              }
+            </p>
+          </Link>
+
+        </div>
+      )}
+
+      {/* META TAGS */}
+
       {(project.category ||
         project.budget ||
         project.timeline ||
         project.location) && (
-        <div className="mt-4 flex flex-wrap gap-2 text-xs">
-
+        <div
+          className="
+            mt-4 flex flex-wrap
+            gap-2 text-xs
+          "
+        >
           {project.category && (
-            <span className="border border-gray-300 px-2 py-1 text-gray-700">
+            <span
+              className="
+                border border-gray-300
+                px-2 py-1 text-gray-700
+              "
+            >
               {project.category}
             </span>
           )}
 
           {project.budget && (
-            <span className="border border-gray-300 px-2 py-1 text-gray-700">
-              budget: {project.budget}
+            <span
+              className="
+                border border-gray-300
+                px-2 py-1 text-gray-700
+              "
+            >
+              budget:{" "}
+              {project.budget}
             </span>
           )}
 
           {project.timeline && (
-            <span className="border border-gray-300 px-2 py-1 text-gray-700">
-              scope: {project.timeline}
+            <span
+              className="
+                border border-gray-300
+                px-2 py-1 text-gray-700
+              "
+            >
+              scope:{" "}
+              {project.timeline}
             </span>
           )}
 
           {project.location && (
-            <span className="border border-gray-300 px-2 py-1 text-gray-700">
+            <span
+              className="
+                border border-gray-300
+                px-2 py-1 text-gray-700
+              "
+            >
               {project.location}
             </span>
           )}
-
         </div>
       )}
 
       {/* FOOTER */}
-      <div className="mt-4 -m-4 border-t border-gray-200 bg-neutral-100">
 
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2">
+      {showFooter && (
+        <div
+          className="
+            mt-4 -m-4
+            border-t border-gray-200
+            bg-neutral-100
+          "
+        >
+          <div
+            className="
+              flex flex-wrap
+              items-center
+              justify-between
+              gap-3 px-4 py-2
+            "
+          >
+            {/* ACTIONS */}
 
-          {/* ACTIONS */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
-
-            {/* APPLY */}
-            <button
-              onClick={() => {
-                  if (!session) {
-                    showToast(
-                      "login required to apply"
-                    );
-                    return;
-                  }
-                  handleApply();
-                }}
-              disabled={pending}
-              className={`hover:underline ${
-                applied
-                  ? "font-semibold text-green-700"
-                  : "text-gray-600"
-              }`}
+            <div
+              className="
+                flex flex-wrap
+                items-center
+                gap-x-3 gap-y-2
+                text-xs
+              "
             >
-              {applied
-                ? "applied"
-                : "apply"}
-            </button>
+              {/* APPLY */}
 
-            <span className="text-gray-300">
-              |
-            </span>
+              {!isOwner && (
+                <>
+                  <button
+                    onClick={
+                      handleApplyIntent
+                    }
+                    disabled={
+                      pending ||
+                      applied
+                    }
+                    className={`
+                      font-medium
+                      hover:underline
 
-           {/* PING */}
-            <button
-              onClick={async () => {
+                      ${
+                        applied
+                          ? "text-green-700"
+                          : "text-black"
+                      }
+                    `}
+                  >
+                    {applied
+                      ? "applied"
+                      : "apply"}
+                  </button>
 
-                if (!session) {
-                  showToast(
-                    "login required to ping"
-                  );
-                  return;
-                }
-                try {
-                  await handlePing();
-                  showToast(
-                    `you pinged @${project.user.username}`
-                  );
-                } catch {
-                  showToast(
-                    "unable to send ping"
-                  );
-                }
-              }}
-              disabled={pending}
-              className="text-gray-600 hover:underline"
-            >
-              ping
-            </button>
+                  <span className="text-gray-300">
+                    |
+                  </span>
+                </>
+              )}
 
-            <span className="text-gray-300">
-              |
-            </span>
+              {/* PING */}
 
-            {/* SAVE */}
-            <form
-              action={async () => {
-                if (!session) {
-                  showToast(
-                    "login required to save"
-                  );
-                  return;
-                }
-                const next = !saved;
+              {!isOwner && (
+                <>
+                  <button
+                    onClick={
+                      handlePing
+                    }
+                    disabled={
+                      pending
+                    }
+                    className="
+                      text-gray-600
+                      hover:underline
+                    "
+                  >
+                    ping
+                  </button>
 
-                setSaved(next);
+                  <span className="text-gray-300">
+                    |
+                  </span>
+                </>
+              )}
 
-                setSaving(true);
+              {/* SAVE */}
 
-                try {
-                  await saveProject(project.id);
-                    showToast(
-                              next
-                                ? "listing saved"
-                                : "listing removed"
-                            );
-
-                          } catch {
-
-                            setSaved(!next);
-
-                            showToast(
-                              "something went wrong"
-                            );
-                } finally {
-                  setSaving(false);
-                }
-              }}
-            >
               <button
-                type="submit"
+                onClick={handleSave}
                 disabled={saving}
-                className={`transition hover:underline ${
-                  saved
-                    ? "font-semibold text-amber-700"
-                    : "text-gray-600"
-                }`}
+                className={`
+                  transition
+                  hover:underline
+
+                  ${
+                    saved
+                      ? "font-semibold text-amber-700"
+                      : "text-gray-600"
+                  }
+                `}
               >
                 {saving
                   ? "..."
@@ -387,147 +539,181 @@ async function handleApply() {
                   ? "saved"
                   : "save"}
               </button>
-            </form>
 
-            {variant === "feed" && !isOwner && (
-              <>
-              <span className="text-gray-300">
-                |
-              </span>
+              {/* FEED ONLY */}
 
-              <Link
-                href={`/projects/${project.slug}`}
-                className="text-gray-600 hover:underline"
-              >
-                details
-              </Link>
+              {isFeed && (
+                <>
+                  <span className="text-gray-300">
+                    |
+                  </span>
 
-                <span className="text-gray-300">
-                  |
-                </span>
+                  <Link
+                    href={`/projects/${project.slug}`}
+                    className="
+                      text-gray-600
+                      hover:underline
+                    "
+                  >
+                    details
+                  </Link>
 
-                <Link
-                  href={`/messages?user=${project.user.id}`}
-                  className="text-gray-600 hover:underline"
-                >
-                  message
-                </Link>
-              </>
-            )}
-            
+                  {!isOwner && (
+                    <>
+                      <span className="text-gray-300">
+                        |
+                      </span>
 
-            {variant === "detail" && isOwner && (
-              <>
-                <span className="text-gray-300">
-                  |
-                </span>
+                      <Link
+                        href={`/messages?user=${project.user.id}`}
+                        className="
+                          text-gray-600
+                          hover:underline
+                        "
+                      >
+                        message
+                      </Link>
+                    </>
+                  )}
+                </>
+              )}
 
-                <Link
-                  href={`/projects/${project.slug}/edit`}
-                  className="text-gray-600 hover:underline"
-                >
-                  edit
-                </Link>
+              {/* DETAIL ONLY */}
 
-                <span className="text-gray-300">
-                  |
-                </span>
+              {isDetail && (
+                <>
+                  {!isOwner && (
+                    <>
+                      <span className="text-gray-300">
+                        |
+                      </span>
 
-                <button
-                  onClick={async () => {
-                    await deleteProject(
-                      project.id
-                    );
-                  }}
-                  className="text-red-600 hover:underline"
-                >
-                  delete
-                </button>
-              </>
-            )}
+                      <Link
+                        href={`/messages?user=${project.user.id}`}
+                        className="
+                          text-gray-600
+                          hover:underline
+                        "
+                      >
+                        message
+                      </Link>
+                    </>
+                  )}
 
-  {/* ONLY DETAIL VIEW */}
-  {variant === "detail" && (
-    <>
+                  <span className="text-gray-300">
+                    |
+                  </span>
 
-      { !isOwner && (
-        <>
-          <span className="text-gray-300">|</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        window.location.href
+                      );
 
-          <Link
-            href={`/messages?user=${project.user.id}`}
-            className="text-gray-600 hover:underline"
-          >
-            message
-          </Link>
-        </>
-      )}
+                      showToast(
+                        "link copied"
+                      );
+                    }}
+                    className="
+                      text-gray-600
+                      hover:underline
+                    "
+                  >
+                    copy link
+                  </button>
 
-      <span className="text-gray-300">|</span>
+                  <span className="text-gray-300">
+                    |
+                  </span>
 
-      <button
-        onClick={() => {
-          navigator.clipboard.writeText(window.location.href);
-          showToast("link copied");
-        }}
-        className="text-gray-600 hover:underline"
-      >
-        copy link
-      </button>
+                  <button
+                    onClick={() => {
+                      if (
+                        navigator.share
+                      ) {
+                        navigator.share({
+                          title:
+                            project.title,
 
-      <span className="text-gray-300">|</span>
+                          url:
+                            window.location.href,
+                        });
+                      } else {
+                        navigator.clipboard.writeText(
+                          window.location.href
+                        );
 
-      <button
-        onClick={() => {
-          if (navigator.share) {
-            navigator.share({
-              title: project.title,
-              url: window.location.href,
-            });
-          } else {
-            navigator.clipboard.writeText(window.location.href);
-            showToast("link copied");
-          }
-        }}
-        className="text-gray-600 hover:underline"
-      >
-        share
-      </button>
+                        showToast(
+                          "link copied"
+                        );
+                      }
+                    }}
+                    className="
+                      text-gray-600
+                      hover:underline
+                    "
+                  >
+                    share
+                  </button>
 
-    </>
-  )}
+                  {/* OWNER */}
 
+                  {isOwner && (
+                    <>
+                      <span className="text-gray-300">
+                        |
+                      </span>
+
+                      <Link
+                        href={`/projects/${project.slug}/edit`}
+                        className="
+                          text-gray-600
+                          hover:underline
+                        "
+                      >
+                        edit
+                      </Link>
+
+                      <span className="text-gray-300">
+                        |
+                      </span>
+
+                      <button
+                        onClick={async () => {
+                          await deleteProject(
+                            project.id
+                          );
+                        }}
+                        className="
+                          text-red-600
+                          hover:underline
+                        "
+                      >
+                        delete
+                      </button>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* PING COUNT */}
+
+            <div
+              className="
+                shrink-0 border
+                border-gray-300
+                bg-white
+                px-2 py-1
+                text-[11px]
+                text-gray-600
+              "
+            >
+              {pingCount} pings
+            </div>
           </div>
-
-          {/* PINGS */}
-          <div className="shrink-0 border border-gray-300 bg-white px-2 py-1 text-[11px] text-gray-600">
-            {pingCount} pings
-          </div>
-
         </div>
-
-        {/* APPLY FORM */}
-        {showApplyForm && !applied && (
-
-          <ApplyForm
-            projectId={project.id}
-            applicantName={
-              session?.user?.name
-            }
-            applicantEmail={
-              session?.user?.email
-            }
-            onApplied={() => {
-              setApplied(true);
-
-              setShowApplyForm(false);
-            }}
-          />
-
-        )}
-
-      </div>
-
+      )}
     </article>
   );
 }
