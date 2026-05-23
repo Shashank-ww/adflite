@@ -165,7 +165,7 @@ export default function Header() {
                     className="h-7 w-7 rounded-full border border-gray-300 object-cover"
                   />
                 ) : (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 bg-gray-100 text-xs uppercase">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 bg-gray-100 text-sm uppercase">
 
                     {session.user.name?.[0]}
 
@@ -252,19 +252,21 @@ export default function Header() {
             </div>
           ) : (
             <button
-              onClick={async () => {
+              onClick={() => {
+
                 setAuthLoading(true);
 
                 showToast(
-                  "redirecting to google login..."
+                  "connecting to google..."
                 );
 
-                await signIn("google", {
-                  callbackUrl: "/profile/onboarding",
+                signIn("google", {
+                  callbackUrl:
+                    "/profile/onboarding",
                 });
+
               }}
             >
-
               {authLoading ? (
                 <>
                   connecting
@@ -273,7 +275,6 @@ export default function Header() {
               ) : (
                 "login"
               )}
-
             </button>
           )}
 

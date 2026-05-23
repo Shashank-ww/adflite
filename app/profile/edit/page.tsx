@@ -52,7 +52,7 @@ export default async function EditProfilePage() {
 
       <EditProfileForm
         user={user}
-        defaultName={session.user.name || ""}
+        defaultName={session.user.name|| ""}
         updateProfile={updateProfile}
       />
 

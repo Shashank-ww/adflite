@@ -7,6 +7,10 @@ import {
 } from "react";
 
 import { useToast } from "@/components/providers/ToastProvider";
+import { deleteProfile } from "@/actions/profileActions";
+import Link from "next/link";
+import { signOut } from "next-auth/react";
+import { generateUsernameSuggestions } from "@/lib/data/usernameSuggestions";
 
 type Props = {
   user: {
@@ -29,47 +33,13 @@ type Props = {
   ) => Promise<void>;
 };
 
-const animals = [
-  "whale",
-  "otter",
-  "croc",
-  "shark",
-  "ray",
-  "eel",
-  "frog",
-  "heron",
-  "crab",
-  "orca",
-  "gator",
-  "stingray",
-  "seal",
-  "squid",
-  "piranha",
-];
-
-const prefixes = [
-  "blue",
-  "tidal",
-  "swamp",
-  "murky",
-  "deep",
-  "wild",
-  "rapid",
-  "delta",
-  "mist",
-  "salt",
-  "fresh",
-  "storm",
-];
-
 export default function EditProfileForm({
   user,
   defaultName,
   updateProfile,
 }: Props) {
 
-  const { showToast } =
-    useToast();
+  const { showToast } = useToast();
 
   const [displayName, setDisplayName] =
     useState(user.name || "");
@@ -89,59 +59,27 @@ export default function EditProfileForm({
   const [error, setError] =
     useState("");
 
-  const [showSuggestions, setShowSuggestions] =
-    useState(false);
-
-  const suggestions =
-    useMemo(() => {
-
-      return Array.from({ length: 8 }).map(() => {
-
-        const prefix =
-          prefixes[
-            Math.floor(
-              Math.random() *
-              prefixes.length
-            )
-          ];
-
-        const animal =
-          animals[
-            Math.floor(
-              Math.random() *
-              animals.length
-            )
-          ];
-
-        const number =
-          Math.floor(
-            10 + Math.random() * 89
-          );
-
-        return `${prefix}${animal}${number}`;
-      });
-
-    }, [showSuggestions]);
-
+const [suggestions, setSuggestions] =
+  useState<string[]>([]);
 
 useEffect(() => {
 
+  setSuggestions(
+    generateUsernameSuggestions()
+  );
 
+}, []);
+
+
+useEffect(() => {
   if (!usernameTouched) {
-
     setAvailable(null);
-
     setError("");
-
     return;
   }
-
   if (!username) {
-
     setAvailable(null);
-
     setError("");
-
     return;
   }
 
@@ -157,32 +95,23 @@ useEffect(() => {
 
   // SAME AS CURRENT USERNAME
   if (clean === original) {
-
     setAvailable(true);
-
     setError("");
-
     return;
   }
 
   const valid =
-    /^[a-z0-9]+$/.test(clean);
-
+    /^[a-z0-9_]+$/.test(clean);
   if (!valid) {
-
     setAvailable(false);
-
     setError(
       "only lowercase letters and numbers"
     );
 
     return;
   }
-
   if (clean.length < 4) {
-
     setAvailable(null);
-
     setError(
       "minimum 4 characters"
     );
@@ -192,54 +121,39 @@ useEffect(() => {
 
   const timeout =
     setTimeout(async () => {
-
       try {
-
         setChecking(true);
-
         const res =
           await fetch(
             `/api/check-username?username=${clean}`
           );
 
-        const data =
+          const data =
           await res.json();
-
         if (data.available) {
-
           setAvailable(true);
-
           setError("");
-
         } else {
-
           setAvailable(false);
-
           setError(
             "username already taken"
           );
         }
-
       } catch {
-
         setAvailable(false);
-
         setError(
           "unable to validate username"
         );
-
       } finally {
-
         setChecking(false);
-
       }
-
     }, 500);
-
   return () =>
     clearTimeout(timeout);
+}, [username, user.username, usernameTouched]);
 
-}, [username, user.username]);
+const [showDangerZone, setShowDangerZone] =
+  useState(false);
 
   return (
     <form
@@ -334,9 +248,6 @@ useEffect(() => {
 <input
   type="text"
   value={username}
-  onFocus={() =>
-    setShowSuggestions(true)
-  }
   onChange={(e) => {
 
     setUsernameTouched(true);
@@ -357,9 +268,23 @@ useEffect(() => {
 
         </p>
 
-        {showSuggestions && (
-
           <div className="mt-3 flex flex-wrap gap-2">
+
+            <button
+  type="button"
+  onClick={() =>
+    setSuggestions(
+      generateUsernameSuggestions()
+    )
+  }
+  className="
+    text-xs
+    text-neutral-500
+    hover:text-black
+  "
+>
+  refresh suggestions
+</button>
 
             {suggestions.map(
               (suggestion) => (
@@ -368,6 +293,7 @@ useEffect(() => {
                   key={suggestion}
                   type="button"
                   onClick={() => {
+                    setUsernameTouched(true);
                     setUsername(
                       suggestion
                     );
@@ -381,8 +307,6 @@ useEffect(() => {
             )}
 
           </div>
-
-        )}
 
         <div className="mt-3 text-xs">
 
@@ -631,11 +555,142 @@ useEffect(() => {
           !!username &&
           available === false
         }
-        className="text-left text-sm hover:underline disabled:opacity-40"
-      >
+        className="w-fit
+  border border-gray-300
+  bg-black
+  px-4 py-2
+  text-sm
+  text-white
+  transition
+  hover:opacity-90
+  disabled:cursor-not-allowed
+  disabled:opacity-40">
         save profile
       </button>
 
+{/* ACCOUNT ACTIONS */}
+
+<div className="mt-10 border-t border-neutral-200 pt-6">
+
+  <button
+    type="button"
+    onClick={() =>
+      setShowDangerZone(
+        !showDangerZone
+      )
+    }
+    className="
+      text-sm
+      text-neutral-500
+      transition
+      hover:text-black
+    "
+  >
+    deactivate profile
+  </button>
+
+  {showDangerZone && (
+
+    <div
+      className="
+        mt-4
+        border border-red-200
+        bg-red-50
+        p-4
+      "
+    >
+
+      <h2 className="text-sm font-bold text-red-700">
+        deactivate profile
+      </h2>
+
+      <p
+        className="
+          mt-2
+          text-xs
+          leading-5
+          text-red-600
+        "
+      >
+        deleting your profile permanently removes your
+        account, projects, applications, saved listings,
+        messages, and related activity.
+      </p>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+
+        <button
+          type="button"
+          onClick={async () => {
+
+            const confirmed =
+              window.confirm(
+                "delete your profile permanently? you will not be able to recover data after you click ok!"
+              );
+
+            if (!confirmed) return;
+            try {
+              showToast(
+                `deleted @${
+                  user.username || "user"
+                } permanently`
+              );
+
+              setTimeout(() => {
+                (async () => {
+                  try {
+                    await deleteProfile();
+                    await signOut({
+                      callbackUrl: "/",
+                    });
+                  } catch {
+                    showToast(
+                      "unable to delete profile"
+                    );
+                  }
+                })();
+              }, 500);
+            } catch {
+              showToast(
+                "unable to delete profile"
+              );
+            }
+          }}
+          className="
+            border border-red-300
+            bg-white
+            px-4 py-2
+            text-sm
+            text-red-700
+            transition
+            hover:bg-red-100
+          "
+        >
+          delete my profile permanently
+        </button>
+
+        <Link
+          href="/contact"
+          className="
+            border border-neutral-300
+            bg-white
+            px-4 py-2
+            text-sm
+            text-neutral-700
+            transition
+            hover:bg-neutral-50
+          "
+        >
+          reach out to us
+        </Link>
+
+      </div>
+
+    </div>
+
+  )}
+
+</div>
     </form>
   );
 }

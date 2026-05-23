@@ -131,7 +131,7 @@ const projects =
 
 
   return (
-    <section className="w-full overflow-hidden border border-gray-200 bg-white">
+    <section className="w-full overflow-hidden border border-gray-200 bg-white rounded-md">
 
       <FeedIntro />
 

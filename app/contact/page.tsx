@@ -124,7 +124,7 @@ export default function ContactPage() {
         </p>
 
         <h2 className="text-3xl font-semibold leading-tight text-[#1f1f1b]">
-          why switchwaters.com exists
+          why switchwaters exists
         </h2>
 
       </div>

@@ -16,8 +16,18 @@ type Props = {
   };
 };
 
-const usernameSuggestions =
-  generateUsernameSuggestions(8);
+const [
+  usernameSuggestions,
+  setUsernameSuggestions,
+] = useState<string[]>([]);
+
+useEffect(() => {
+
+  setUsernameSuggestions(
+    generateUsernameSuggestions()
+  );
+
+}, []);
 
 export default function OnboardingForm({
   user,
@@ -59,35 +69,26 @@ export default function OnboardingForm({
 
     if (clean.length < 3) {
       setAvailable(false);
-
       setError(
         "minimum 3 characters"
       );
-
       return;
     }
 
     const valid =
       /^[a-z0-9]+$/.test(clean);
-
     if (!valid) {
-
       setAvailable(false);
-
       setError(
         "only lowercase letters and numbers"
       );
-
       return;
     }
 
     const timeout =
       setTimeout(async () => {
-
         try {
-
           setChecking(true);
-
           const res =
             await fetch(
               `/api/check-username?username=${clean}`
@@ -95,41 +96,27 @@ export default function OnboardingForm({
 
           const data =
             await res.json();
-
           if (data.available) {
-
             setAvailable(true);
-
             setError("");
-
           } else {
-
             setAvailable(false);
-
             setError(
               "username already taken"
             );
           }
 
         } catch {
-
           setAvailable(false);
-
           setError(
             "unable to validate username"
           );
-
         } finally {
-
           setChecking(false);
-
         }
-
       }, 500);
-
     return () =>
       clearTimeout(timeout);
-
   }, [username, touched]);
 
   return (
@@ -244,6 +231,22 @@ export default function OnboardingForm({
         </p>
 
         <div className="mt-3 flex flex-wrap gap-2">
+
+          <button
+  type="button"
+  onClick={() =>
+    setUsernameSuggestions(
+      generateUsernameSuggestions(6)
+    )
+  }
+  className="
+    text-xs
+    text-neutral-500
+    hover:text-black
+  "
+>
+  refresh suggestions
+</button>
 
           {usernameSuggestions.map(
             (item) => (

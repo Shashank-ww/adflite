@@ -15,10 +15,51 @@ export default async function FeedIntro() {
 
   return (
 
-    <section className="border border-gray-300 bg-blue-50 p-4 sm:p-6">
+    <section className="relative
+    overflow-hidden
+    rounded-t-md
+    border border-neutral-200
+    bg-neutral-50
+    p-4 sm:p-6">
+
+{/* BACKGROUND IMAGE */}
+
+<div
+  className="
+    absolute inset-0
+    hidden md:block
+    pointer-events-none
+  "
+>
+
+  {/* COLOR OVERLAY */}
+
+  <div
+    className="
+      absolute inset-0
+      z-10
+      bg-neutral-50/10
+    "
+  />
+
+  {/* IMAGE */}
+
+  <div
+    className="
+      absolute inset-0
+      bg-cover
+      bg-center
+    "
+    style={{
+      backgroundImage:
+        "url('/assets/professional.jpg')",
+    }}
+  />
+
+</div>
 
       <div
-        className="
+        className="relative z-10
           flex flex-col gap-5
           md:flex-row md:items-start md:justify-between
         "
@@ -26,7 +67,7 @@ export default async function FeedIntro() {
 
         {/* LEFT */}
 
-        <div className="max-w-2xl">
+        <div className="max-w-xl">
 
           <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wide text-blue-800">
 
@@ -47,7 +88,7 @@ export default async function FeedIntro() {
           <h1
             className="
               mt-2
-              max-w-prose
+              max-w-2xl
               text-2xl font-bold leading-tight text-blue-950
               sm:text-3xl
               md:text-4xl
@@ -62,7 +103,7 @@ export default async function FeedIntro() {
           <p
             className="
               mt-3
-              max-w-prose
+              max-w-2xl
               text-base leading-6 text-blue-900
               sm:text-balance
             "

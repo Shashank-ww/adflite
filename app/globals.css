@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #eff6f0;
-  --card: #ffffff;
-  --border: #d1d5db;
+  --bg: #e9e6f3;
+  --card: #fffdf8;
+  --border: #d8d0c2;
 
-  --link: #222cb1;
-  --link-visited: #551a8b;
+  --text: #171717;
 
-  --text: #111827;
+  --link: #0f4c81;
+  --link-visited: #6d3fc2;
 }
 
 html,

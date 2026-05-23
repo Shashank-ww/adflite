@@ -56,7 +56,7 @@ const animals = [
 ];
 
 export function generateUsernameSuggestions(
-  count = 8
+  count = 6
 ) {
   const suggestions =
     new Set<string>();

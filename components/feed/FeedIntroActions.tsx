@@ -39,12 +39,12 @@ export default function FeedIntroActions() {
         className="inline-flex w-full items-center justify-center
 
           border border-blue-300
-          bg-blue-100
+          bg-gray-100
 
           px-4 py-2
           text-center
           transition
-          hover:bg-blue-200
+          hover:bg-blue-100
           sm:w-auto
         "
       >
