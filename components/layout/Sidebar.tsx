@@ -70,7 +70,7 @@ export default async function Sidebar() {
       : null;
 
   return (
-    <aside className="hidden w-72 shrink-0 lg:block">
+    <aside className="hidden w-64 shrink-0 lg:block">
 
       <div
         className="
