@@ -333,7 +333,7 @@ export default async function Sidebar() {
             <nav className="flex flex-col text-sm">
 
               <Link
-                href="/projects"
+                href="/projects/my"
                 className="
                         flex items-center gap-2
                         rounded-md
@@ -345,7 +345,7 @@ export default async function Sidebar() {
                         "
                       >
                 <FolderGit size={16} strokeWidth={1.6} />
-                my projects
+                my listings
               </Link>
 
   <Link
