@@ -9,28 +9,27 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://switchwaters.com"),
 
   title: {
-    default: "Switchwaters",
+    default: "Discover Work Worth Switching For",
     template: "%s | Switchwaters",
   },
 
   description:
-    "Switchwaters is a modern classifieds platform for internet professionals. Discover projects, freelance work, jobs, collaborators, services, and opportunities worth switching for.",
+    "Discover projects, freelance work, jobs, collaborators, services, and opportunities worth switching for.",
 
   keywords: [
+    "switchwaters",
     "classifieds",
     "freelance marketplace",
-    "jobs",
-    "remote work",
-    "projects",
-    "internet professionals",
+    "remote jobs",
+    "project marketplace",
+    "freelancers",
     "creative talent",
     "marketing jobs",
     "tech jobs",
     "startup opportunities",
-    "freelancers",
-    "contract work",
     "side projects",
-    "Switchwaters",
+    "contract work",
+    "internet professionals",
   ],
 
   authors: [
@@ -46,17 +45,24 @@ export const metadata: Metadata = {
     canonical: "/",
   },
 
+  verification: {
+    google: "5rr8JiHBM8cHSaevK4DOeuKBU03QXDMhoUYZGQpK3qI",
+  },
+
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://switchwaters.com",
     siteName: "Switchwaters",
-    title: "Switchwaters",
+
+    title: "Switchwaters — Discover Work Worth Switching For",
+
     description:
-      "Discover projects, freelance work, jobs, collaborators, and opportunities worth switching for.",
+      "Find projects, jobs, collaborators, freelance work, and opportunities worth switching for.",
+
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/assets/professional.jpg",
         width: 1200,
         height: 630,
         alt: "Switchwaters",
@@ -66,15 +72,21 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Switchwaters",
+
+    title: "Switchwaters — Discover Work Worth Switching For",
+
     description:
-      "Discover projects, freelance work, jobs, collaborators, and opportunities worth switching for.",
-    images: ["/og-image.jpg"],
+      "Find projects, jobs, collaborators, freelance work, and opportunities worth switching for.",
+
+    images: [
+      "/assets/professional.jpg",
+    ],
   },
 
   robots: {
     index: true,
     follow: true,
+
     googleBot: {
       index: true,
       follow: true,
