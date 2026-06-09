@@ -134,31 +134,39 @@ export default function ContactPage() {
       <div className="space-y-4 text-lg leading-8 text-[#2d2d28]">
 
         <p>
-          there&apos;s a strange moment we feel right after the college.
+          i still remember the first time i realized i was directionless. 
         </p>
 
         <p>
-          the structure disappears.
-          the guidance stops.
-          and suddenly nobody tells you where to go anymore.
+          not because i lacked ambition. not because i wasn't trying. i simply didn't know where i was supposed to go.
+          no one really teaches that.
         </p>
 
         <p>
-          you realize the degree was not the destination,
+          not our teachers. not degree. not the people telling you what success is supposed to look like.
+        </p>
+
+        <p className="font-bold">
+          everyone has advice.
+          nobody has directions.
+        </p>
+
+        <p>
+          years ago, when i dropped out of engineering, it felt like failure.
+          i realised the degree was not the destination,
           landing that first internship was not the plan,
-          and the “career ladder” was mostly a story repeated so often
-          that everyone accepted it as truth.
         </p>
 
         <p>
+          the “career ladder” was mostly a story repeated so often
+          that everyone accepted it as truth.
           i learnt this the hard way.
         </p>
 
         <p>
-          i couldn&apos;t complete engineering.
-          at that point in life, it felt humiliating,
-          not because i lacked effort,
-          but because i lacked direction.
+          people graduate without direction.
+          people switch careers without guidance.
+          people spend years in jobs wondering if they're building a life they actually want.
         </p>
 
         <p>
@@ -168,62 +176,35 @@ export default function ContactPage() {
         <p>
           schools prepare people to pass.
           corporates prepare people to produce.
-          they trust you after a degree is because you have a degree that proves your stability at one place.
-          job platforms prepare people to apply.
+          they trust you after a degree is because that proves your stability at one place.
         </p>
 
         <p>
-          but very few systems help people understand:
+          but very few people are taught how to navigate uncertainty, find their place, or build a path that is truly their own.
+          <span className="font-bold"> that's why Switchwaters exists.</span>
         </p>
 
         <ul className="ml-4 list-disc space-y-2 text-[#44443d]">
 
-          <li>who they are</li>
+          <li>not as another job board</li>
 
-          <li>how they work</li>
+          <li>not another freelance platform</li>
 
-          <li>where they belong</li>
+          <li>not just social networking</li>
 
-          <li>how to move through uncertainty</li>
+          <li>it is made for those moving through uncertainty</li>
 
         </ul>
 
         <p>
-          eventually i realized people are not failing because
-          they are incapable.
-        </p>
-
-        <p>
-          they are failing because they are navigating ecosystems
-          they were never taught to understand.
-        </p>
-
-        <p>
-          that became the beginning of switchwaters.
-        </p>
-
-        <p>
-          not as another social network.
-          not as another hiring funnel.
-          not as another freelance bidding marketplace.
-        </p>
-
-        <p>
-          but as a habitat. where people do what they do best. fend for themselves.
+         as a habitat. where people do what they do best. fend for themselves.
         </p>
 
         <p>
           a place where opportunities move like currents,
-          industries like jungles, prey and predators together.
+          industries like jungles, 
           where hidden paths matter,
-          and people more than resumes.
-        </p>
-
-        <p>
-          this platform is for people in motion:
-          freelancers, operators, creatives, founders,
-          specialists, explorers, builders, and teams trying
-          to find aligned work in changing waters.
+          and people more than their resumes.
         </p>
 
         <p>
@@ -232,10 +213,10 @@ export default function ContactPage() {
         </p>
 
         <p>
-          if you share the same vision,
-          welcome to the switchwaters habitat.
+          if you share the same thoughts, you are at the right place!
         </p>
 
+          welcome to the switchwaters habitat.
         {/* SIGN */}
 
         <div className="pt-10">
@@ -243,12 +224,13 @@ export default function ContactPage() {
           <div className="inline-block border-t border-[#c8c5b7] pt-4">
 
             <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
-              — founder
+              — Shashank Srivastava
             </p>
+            <p className="text-sm text-gray-500 ml-6">founder ceo</p>
 
             <Link
               href="/"
-              className="flex text-base mt-3 font-bold tracking-wide gap-1 items-center justify-center"
+              className="flex text-base mt-3 font-bold tracking-wide gap-1"
             >
               <OrigamiIcon size={20} />
 
@@ -356,7 +338,7 @@ export default function ContactPage() {
                 hover:opacity-90
               "
             >
-              explore repository
+              explore git
             </a>
 
             <a
@@ -369,7 +351,7 @@ export default function ContactPage() {
                 hover:bg-white
               "
             >
-              suggest improvements
+              debug
             </a>
 
           </div>

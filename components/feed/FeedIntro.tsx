@@ -109,7 +109,7 @@ export default async function FeedIntro() {
             "
           >
 
-            built for ad operators, marketers, media buyers, editors, strategists, creators and internet talent.
+            a habitat for marketers, operators, creators, freelancers and teams navigating changing waters.
 
           </p>
 

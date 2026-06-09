@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
 
 import { redirect } from "next/navigation";
 
+import SettingsToggles from "@/components/ui/settings-toggles";
+
 export default async function SettingsPage() {
 
   const session =
@@ -17,12 +19,47 @@ export default async function SettingsPage() {
     redirect("/");
   }
 
-  const user =
-    await prisma.user.findUnique({
-      where: {
-        id: session.user.id,
-      },
-    });
+
+const [
+  user,
+  projectCount,
+  applicationCount,
+  savedCount,
+  pingCount,
+] = await Promise.all([
+  prisma.user.findUnique({
+    where: {
+      id: session.user.id,
+    },
+    include: {
+      accounts: true,
+    },
+  }),
+
+  prisma.project.count({
+    where: {
+      userId: session.user.id,
+    },
+  }),
+
+  prisma.application.count({
+    where: {
+      userId: session.user.id,
+    },
+  }),
+
+  prisma.savedProject.count({
+    where: {
+      userId: session.user.id,
+    },
+  }),
+
+  prisma.ping.count({
+    where: {
+      senderId: session.user.id,
+    },
+  }),
+]);
 
   if (!user) {
     redirect("/");
@@ -192,14 +229,18 @@ export default async function SettingsPage() {
 
               </div>
 
-              {user.username && (
-                <Link
-                  href={`/u/${user.username}`}
-                  className="text-xs hover:underline"
-                >
-                  open
-                </Link>
-              )}
+{user.username && (
+  <div className="flex gap-3 text-xs">
+
+<Link
+  href={`/u/${user.username}`}
+  className="hover:underline"
+>
+  open public profile
+</Link>
+
+  </div>
+)}
 
             </div>
 
@@ -217,9 +258,13 @@ export default async function SettingsPage() {
 
               </div>
 
-              <span className="border border-gray-300 bg-gray-100 px-2 py-1 text-[11px]">
-                active
-              </span>
+              <SettingsToggles
+                type="visibility"
+                enabled={
+                  user.profileVisibility ===
+                  "public"
+                }
+              />
 
             </div>
 
@@ -228,20 +273,20 @@ export default async function SettingsPage() {
               <div>
 
                 <p className="font-medium">
-                  public listings
+                  my listings
                 </p>
 
                 <p className="mt-1 text-xs text-gray-500">
-                  listings posted under your identity
+                  listings you posted
                 </p>
 
               </div>
 
               <Link
-                href="/projects"
+                href="/projects/my"
                 className="text-xs hover:underline"
               >
-                view listings
+                show my listings
               </Link>
 
             </div>
@@ -282,35 +327,166 @@ export default async function SettingsPage() {
 
               </div>
 
-              <span className="border border-gray-300 bg-gray-100 px-2 py-1 text-[11px]">
-                enabled
-              </span>
+            <SettingsToggles
+              type="messages"
+              enabled={user.allowMessages}
+            />
 
             </div>
 
-            <div className="flex items-center justify-between gap-4">
+<div className="flex items-center justify-between gap-4">
 
-              <div>
+  <div>
 
-                <p className="font-medium">
-                  application visibility
-                </p>
+    <p className="font-medium">
+      collaboration pings
+    </p>
 
-                <p className="mt-1 text-xs text-gray-500">
-                  recruiters and posters can view your profile
-                </p>
+    <p className="mt-1 text-xs text-gray-500">
+      allow users to send collaboration pings
+    </p>
 
-              </div>
+  </div>
 
-              <span className="border border-gray-300 bg-gray-100 px-2 py-1 text-[11px]">
-                enabled
-              </span>
+  <SettingsToggles
+    type="pings"
+    enabled={user.allowPings}
+  />
 
             </div>
 
           </div>
 
         </section>
+
+        {/* ACTIVITY STATUS */}
+
+        <section className="border-b border-gray-300 p-6">
+
+  <div className="mb-5">
+
+    <h2 className="font-bold">
+      activity
+    </h2>
+
+    <p className="mt-1 text-xs text-gray-500">
+      manage your projects and activity
+    </p>
+
+  </div>
+
+  <div className="flex flex-col gap-5 text-sm">
+
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="font-medium">
+          my listings
+        </p>
+
+        <p className="mt-1 text-xs text-gray-500">
+          projects you've posted
+        </p>
+
+      </div>
+
+      <Link
+        href="/projects/my"
+        className="text-xs hover:underline"
+      >
+        open
+      </Link>
+
+    </div>
+
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="font-medium">
+          applications
+        </p>
+
+        <p className="mt-1 text-xs text-gray-500">
+          submitted applications
+        </p>
+
+      </div>
+
+      <Link
+        href="/applications"
+        className="text-xs hover:underline"
+      >
+        open
+      </Link>
+
+    </div>
+
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="font-medium">
+          saved listings
+        </p>
+
+      </div>
+
+      <Link
+        href="/saved"
+        className="text-xs hover:underline"
+      >
+        open
+      </Link>
+
+    </div>
+
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="font-medium">
+          messages
+        </p>
+
+      </div>
+
+      <Link
+        href="/messages"
+        className="text-xs hover:underline"
+      >
+        open
+      </Link>
+
+    </div>
+
+    <div className="flex items-center justify-between">
+
+  <div>
+
+    <p className="font-medium">
+      collaboration pings
+    </p>
+
+    <p className="mt-1 text-xs text-gray-500">
+      projects and people you've pinged
+    </p>
+
+  </div>
+
+  <Link
+    href="/pings"
+    className="text-xs hover:underline"
+  >
+    open
+  </Link>
+
+</div>
+
+  </div>
+
+</section>
 
         {/* PREFERENCES */}
 
@@ -379,6 +555,160 @@ export default async function SettingsPage() {
 
         </section>
 
+        {/* STATISTICS */}
+
+<section className="border-b border-gray-300 p-6">
+
+  <div className="mb-5">
+
+    <h2 className="font-bold">
+      statistics
+    </h2>
+
+    <p className="mt-1 text-xs text-gray-500">
+      your switchwaters activity
+    </p>
+
+  </div>
+
+  <div className="grid grid-cols-2 gap-4 text-sm">
+
+    <div className="border border-gray-300 p-3">
+
+      <p className="text-xs text-gray-500">
+        listings posted
+      </p>
+
+      <p className="mt-2 text-xl font-bold">
+        {projectCount}
+      </p>
+
+    </div>
+
+    <div className="border border-gray-300 p-3">
+
+      <p className="text-xs text-gray-500">
+        applications
+      </p>
+
+      <p className="mt-2 text-xl font-bold">
+        {applicationCount}
+      </p>
+
+    </div>
+
+    <div className="border border-gray-300 p-3">
+
+      <p className="text-xs text-gray-500">
+        saved listings
+      </p>
+
+      <p className="mt-2 text-xl font-bold">
+        {savedCount}
+      </p>
+
+    </div>
+
+    <div className="border border-gray-300 p-3">
+
+      <p className="text-xs text-gray-500">
+        collaboration pings
+      </p>
+
+      <p className="mt-2 text-xl font-bold">
+        {pingCount}
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+{/* SECURITY */}
+
+<section className="border-b border-gray-300 p-6">
+
+  <div className="mb-5">
+
+    <h2 className="font-bold">
+      security
+    </h2>
+
+    <p className="mt-1 text-xs text-gray-500">
+      account access and ownership
+    </p>
+
+  </div>
+
+  <div className="flex flex-col gap-5 text-sm">
+
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="font-medium">
+          login provider
+        </p>
+
+        <p className="mt-1 text-xs text-gray-500">
+
+          {user.accounts?.[0]?.provider ||
+            "credentials"}
+
+        </p>
+
+      </div>
+
+    </div>
+
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="font-medium">
+          joined
+        </p>
+
+        <p className="mt-1 text-xs text-gray-500">
+
+          {new Date(
+            user.createdAt
+          ).toLocaleDateString()}
+
+        </p>
+
+      </div>
+
+    </div>
+
+    <div className="flex items-center justify-between">
+
+      <div>
+
+        <p className="font-medium text-red-600">
+          delete account
+        </p>
+
+        <p className="mt-1 text-xs text-gray-500">
+          permanently remove your profile
+        </p>
+
+      </div>
+
+      <Link
+        href="/profile/edit"
+        className="text-xs text-red-600 hover:underline"
+      >
+        manage
+      </Link>
+
+    </div>
+
+  </div>
+
+</section>
+
         {/* WATER IDENTITY */}
 
         <section className="p-6">
@@ -406,13 +736,21 @@ export default async function SettingsPage() {
 
             </p>
 
-            <p className="mt-4 text-xs text-emerald-800">
+<div className="mt-4">
 
-              examples:
-              bluewhale42 · swampfox ·
-              tidalotter · mediacroc12
+  <p className="text-xs font-medium text-emerald-800">
 
-            </p>
+    @{user.username || "username"}
+
+  </p>
+
+  <p className="mt-2 text-xs text-emerald-700">
+
+    switchwaters.com/u/{user.username}
+
+  </p>
+
+</div>
 
           </div>
 

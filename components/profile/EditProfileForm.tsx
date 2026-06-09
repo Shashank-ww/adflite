@@ -2,7 +2,6 @@
 
 import {
   useEffect,
-  useMemo,
   useState,
 } from "react";
 
@@ -61,6 +60,9 @@ export default function EditProfileForm({
 
 const [suggestions, setSuggestions] =
   useState<string[]>([]);
+
+  const [saving, setSaving] =
+  useState(false);
 
 useEffect(() => {
 
@@ -182,14 +184,33 @@ const [showDangerZone, setShowDangerZone] =
             .trim()
             .toLowerCase()
         );
+try {
 
-        await updateProfile(
-          formData
-        );
+  setSaving(true);
 
-        showToast(
-          "profile updated"
-        );
+  showToast(
+    "saving profile..."
+  );
+
+  await updateProfile(
+    formData
+  );
+
+  showToast(
+    "profile updated"
+  );
+
+} catch {
+
+  showToast(
+    "unable to update profile"
+  );
+
+} finally {
+
+  setSaving(false);
+
+}
       }}
       className="flex flex-col gap-5 border border-gray-300 bg-white p-6"
     >
@@ -272,11 +293,14 @@ const [showDangerZone, setShowDangerZone] =
 
             <button
   type="button"
-  onClick={() =>
-    setSuggestions(
-      generateUsernameSuggestions()
-    )
-  }
+    onClick={() => {
+      setSuggestions(
+        generateUsernameSuggestions()
+      );
+      showToast(
+        "new username suggestions crafted for you"
+      );
+    }}
   className="
     text-xs
     text-neutral-500
@@ -296,6 +320,9 @@ const [showDangerZone, setShowDangerZone] =
                     setUsernameTouched(true);
                     setUsername(
                       suggestion
+                    );
+                    showToast(
+                      `selected @${suggestion}`
                     );
                   }}
                   className="border border-gray-300 bg-gray-50 px-2 py-1 text-[11px] text-gray-600 hover:bg-amber-50"
@@ -387,7 +414,7 @@ const [showDangerZone, setShowDangerZone] =
             hiring
           </option>
 
-          <option value="just networking">
+          <option value="networking">
             networking
           </option>
 
@@ -549,24 +576,51 @@ const [showDangerZone, setShowDangerZone] =
 
       </div>
 
-      <button
-        type="submit"
-        disabled={
-          !!username &&
-          available === false
-        }
-        className="w-fit
-  border border-gray-300
-  bg-black
-  px-4 py-2
-  text-sm
-  text-white
-  transition
-  hover:opacity-90
-  disabled:cursor-not-allowed
-  disabled:opacity-40">
-        save profile
-      </button>
+<div className="flex gap-2">
+
+  <button
+    type="submit"
+    disabled={
+      saving ||
+      (!!username &&
+        available === false)
+    }
+    className="
+      border border-gray-300
+      bg-black
+      px-4 py-2
+      text-sm
+      text-white
+      transition
+      hover:opacity-90
+      disabled:cursor-not-allowed
+      disabled:opacity-40
+    "
+  >
+    {saving
+      ? "saving..."
+      : "save profile"}
+  </button>
+
+  <button
+    type="button"
+    onClick={() => {
+      window.location.reload();
+    }}
+    className="
+      border border-gray-300
+      bg-white
+      px-4 py-2
+      text-sm
+      text-neutral-700
+      transition
+      hover:bg-neutral-50
+    "
+  >
+    cancel
+  </button>
+
+</div>
 
 {/* ACCOUNT ACTIONS */}
 
@@ -630,11 +684,9 @@ const [showDangerZone, setShowDangerZone] =
 
             if (!confirmed) return;
             try {
-              showToast(
-                `deleted @${
-                  user.username || "user"
-                } permanently`
-              );
+                showToast(
+                  "deleting profile..."
+                );
 
               setTimeout(() => {
                 (async () => {
@@ -645,7 +697,9 @@ const [showDangerZone, setShowDangerZone] =
                     });
                   } catch {
                     showToast(
-                      "unable to delete profile"
+                      `deleted @${
+                        user.username || "user"
+                      } permanently`
                     );
                   }
                 })();

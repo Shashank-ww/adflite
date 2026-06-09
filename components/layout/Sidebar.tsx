@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 import { prisma } from "@/lib/prisma";
-import { BellRing, BookmarkPlus, FileUser, FolderGit, FolderTree, MessagesSquare, Save, Telescope } from "lucide-react";
+import { BellRing, FileUser, FolderGit, FolderTree, MessagesSquare, Save, Telescope } from "lucide-react";
 
 const categories = [
   {
@@ -90,7 +90,7 @@ export default async function Sidebar() {
 
     {/* TOP */}
 
-    <div className="flex items-start gap-3">
+    <div className="flex items-center gap-3">
 
       {/* AVATAR */}
 
@@ -139,7 +139,8 @@ export default async function Sidebar() {
         <Link
           href="/profile"
           className="
-            block truncate
+            block leading-5
+            flex-1
             text-lg font-semibold
             text-black
             hover:underline
@@ -153,7 +154,7 @@ export default async function Sidebar() {
             space-y-2
             flex flex-wrap
             items-center
-            gap-x-1
+            gap-x-2
             text-xs text-gray-500
           "
         >
@@ -162,7 +163,7 @@ export default async function Sidebar() {
 
             <Link
               href={`/u/${user.username}`}
-              className="hover:underline"
+              className="hover:underline py-1"
             >
               @{user.username}
             </Link>
@@ -221,7 +222,6 @@ export default async function Sidebar() {
         )}
 
     {user.bio && (
-
       
       <p
       className="
@@ -259,7 +259,7 @@ export default async function Sidebar() {
   </Link>
 
   <Link
-    href="/settings"
+    href="/profile/edit"
     className="
       
       border border-transparent

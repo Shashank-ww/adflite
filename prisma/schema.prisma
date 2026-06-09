@@ -22,14 +22,15 @@ model User {
   location String?
 
   skills String[]
-
   hourlyRate String?
-
   experience Int?
-
   languages String[]
 
   status String?
+
+  allowMessages Boolean @default(true)
+  allowPings Boolean @default(true)
+  profileVisibility String @default("public")
 
   createdAt DateTime @default(now())
 

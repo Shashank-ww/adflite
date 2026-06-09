@@ -99,7 +99,10 @@ export async function updateProfile(
 
   revalidatePath(`/u/${username}`);
 
-  redirect("/profile");
+  return {
+    success: true,
+  };
+
 }
 
 export async function deleteProfile() {

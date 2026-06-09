@@ -150,14 +150,6 @@ export default function TermsPage() {
               of their google account and associated access credentials.
             </p>
 
-            <h2 className="mb-3 font-medium">
-    authentication and account safety
-  </h2>
-
-  <p className="mt-3">
-    users are responsible for maintaining the security
-    of their google account and associated credentials.
-  </p>
 
   <div className="mt-5 border border-gray-300 bg-gray-50 p-4 text-xs leading-6 text-gray-600">
 
