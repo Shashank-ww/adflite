@@ -131,14 +131,14 @@ const projects =
 
 
   return (
-    <section className="w-full overflow-hidden border border-gray-200 bg-white rounded-md">
+    <section className="w-full border border-gray-200 bg-white rounded-md">
 
       <FeedIntro />
 
-      <SearchStrip
-        query={query}
-        category={category}
-      />
+        <SearchStrip
+          query={query}
+          category={category}
+        />
 
 {projects.length > 0 ? (
 

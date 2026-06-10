@@ -6,11 +6,24 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/components/providers/ToastProvider";
 
 import {
+  OrigamiIcon,
+  House,
+  FolderGit2,
+  MessagesSquare,
+  LogIn,
+  User,
+  Settings,
+  Plus,
+  LogOut,
+  FolderGit,
+  CirclePlus,
+} from "lucide-react";
+
+import {
   signIn,
   signOut,
   useSession,
 } from "next-auth/react";
-import { OrigamiIcon } from "lucide-react";
 
 function Loader() {
   return (
@@ -71,31 +84,32 @@ export default function Header() {
 
 }, [session]);
 
-  const links = [
-    {
-      href: "/",
-      label: "home",
-    },
+const links = [
+  {
+    href: "/",
+    label: "home",
+    icon: House,
+  },
 
-    {
-      href: "/projects",
-      label: "projects",
-    },
+  {
+    href: "/projects",
+    label: "projects",
+    icon: FolderGit2,
+  },
 
-    {
-      href: "/messages",
-      label: "messages",
-      count:
-        unreadCount > 0
-          ? unreadCount
-          : undefined,
-    },
-      ];
+  {
+    href: "/messages",
+    label: "messages",
+    icon: MessagesSquare,
+    count: unreadCount > 0 ? unreadCount : undefined,
+  },
+];
+
 
   return (
     <header className="border-b border-gray-300 bg-white">
 
-      <div className="mx-auto flex max-w-7xl h-14 items-center justify-between px-4 py-3">
+      <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 py-3">
 
         {/* LOGO */}
 
@@ -103,7 +117,7 @@ export default function Header() {
           href="/"
           className="flex text-base font-bold tracking-wide gap-1 items-center justify-center"
         >
-          <OrigamiIcon size={20} />
+          <OrigamiIcon size={20} strokeWidth={1.6} />
 
           <div className="flex items-center">
             <p className="font-thin">switch</p>
@@ -118,23 +132,34 @@ export default function Header() {
 
           <nav className="flex items-center gap-4">
 
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="hover:underline"
-              >
-                <div className="flex items-center gap-1">
-                  <span>{link.label}</span>
+{links.map((link) => {
+  const Icon = link.icon;
 
-                  {link.count ? (
-                    <span>
-                      ({link.count})
-                    </span>
-                  ) : null}
-                </div>
-              </Link>
-            ))}
+  return (
+    <Link
+      key={link.href}
+      href={link.href}
+      className="hover:underline"
+    >
+      <div className="flex items-center gap-1.5">
+
+        <Icon
+          size={16}
+          strokeWidth={1.6}
+        />
+
+        <span>{link.label}</span>
+
+        {link.count ? (
+          <span>
+            ({link.count})
+          </span>
+        ) : null}
+
+      </div>
+    </Link>
+  );
+})}
 
           </nav>
 
@@ -196,32 +221,36 @@ export default function Header() {
 
                 <div className="flex flex-col text-sm">
 
-                  <Link
-                    href="/post"
-                    className="border-b border-gray-200 px-4 py-3 hover:bg-gray-50"
-                  >
-                    + listing
-                  </Link>
+<Link
+  href="/post"
+  className="border-b border-gray-200 px-4 py-3 hover:bg-gray-50 flex items-center gap-2"
+>
+  <CirclePlus size={16} />
+  <span>add listing</span>
+</Link>
 
                   <Link
-                    href="/projects"
-                    className="border-b border-gray-200 px-4 py-3 hover:bg-gray-50"
+                    href="/projects/my"
+                    className="border-b border-gray-200 px-4 py-3 hover:bg-gray-50 flex items-center gap-2"
                   >
-                    projects
+                    <FolderGit size={16} />
+<span>my projects</span>
                   </Link>
 
                   <Link
                     href="/profile"
-                    className="border-b border-gray-200 px-4 py-3 hover:bg-gray-50"
+                    className="border-b border-gray-200 px-4 py-3 hover:bg-gray-50 flex items-center gap-2"
                   >
-                    profile
+                    <User size={16} />
+<span>profile</span>
                   </Link>
 
                   <Link
                     href="/settings"
-                    className="border-b border-gray-200 px-4 py-3 hover:bg-gray-50"
+                    className="border-b border-gray-200 px-4 py-3 hover:bg-gray-50 flex items-center gap-2"
                   >
-                    settings
+                    <Settings size={16} />
+<span>settings</span>
                   </Link>
 
                   <button
@@ -231,7 +260,7 @@ export default function Header() {
                       showToast("logging out...");
                       await signOut();
                     }}
-                    className="px-4 py-3 text-left text-red-600 hover:bg-gray-50"
+                    className="px-4 py-3 text-left text-red-600 hover:bg-gray-50 flex items-center gap-2"
                   >
 
                     {authLoading ? (
@@ -240,7 +269,10 @@ export default function Header() {
                         <Loader />
                       </>
                     ) : (
-                      "logout"
+                      <div className="flex items-center gap-2">
+  <LogOut size={16} />
+  <span>logout</span>
+</div>
                     )}
 
                   </button>
@@ -273,7 +305,10 @@ export default function Header() {
                   <Loader />
                 </>
               ) : (
-                "login"
+                <div className="flex items-center gap-2">
+  <LogIn size={16} />
+  <span>login</span>
+</div>
               )}
             </button>
           )}
@@ -325,18 +360,34 @@ export default function Header() {
 
           <div className="flex flex-col px-4 py-3 text-sm">
 
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="py-3"
-                onClick={() =>
-                  setMobileOpen(false)
-                }
-              >
-                {link.label}
-              </Link>
-            ))}
+{links.map((link) => {
+  const Icon = link.icon;
+
+  return (
+    <Link
+      key={link.href}
+      href={link.href}
+      className="py-3"
+      onClick={() =>
+        setMobileOpen(false)
+      }
+    >
+      <div className="flex items-center gap-3">
+
+        <Icon size={18} />
+
+        <span>{link.label}</span>
+
+        {link.count ? (
+          <span className="text-gray-500">
+            ({link.count})
+          </span>
+        ) : null}
+
+      </div>
+    </Link>
+  );
+})}
 
             <div className="my-2 border-t border-gray-300" />
 
@@ -375,35 +426,39 @@ export default function Header() {
                 </div>
 
                 <Link
-                  href="/profile"
-                  className="py-3"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  profile
-                </Link>
-
-                <Link
-                  href="/projects"
-                  className="py-3"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  projects
-                </Link>
-
-                <Link
                   href="/post"
-                  className="py-3"
+                  className="py-3 flex items-center gap-2"
                   onClick={() => setMobileOpen(false)}
                 >
-                  + listing
+  <CirclePlus size={16} />
+  <span>add listing</span>
+                </Link>
+
+                <Link
+                  href="/projects/my"
+                  className="py-3 flex items-center gap-2"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <FolderGit size={16} />
+<span>my projects</span>
+                </Link>
+
+                <Link
+                  href="/profile"
+                  className="py-3 flex items-center gap-2"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <User size={16} />
+<span>profile</span>
                 </Link>
 
                 <Link
                   href="/settings"
-                  className="py-3"
+                  className="py-3 flex items-center gap-2"
                   onClick={() => setMobileOpen(false)}
                 >
-                  settings
+                  <Settings size={16} />
+<span>settings</span>
                 </Link>
 
                 <button
@@ -413,7 +468,7 @@ export default function Header() {
                     showToast("logging out...");
                     await signOut();
                   }}
-                  className="py-3 text-left text-red-600"
+                  className="py-3 text-left text-red-600 flex items-center gap-2"
                 >
                   {authLoading ? (
                     <>
@@ -421,7 +476,10 @@ export default function Header() {
                       <Loader />
                     </>
                   ) : (
-                    "logout"
+                    <div className="flex items-center gap-2">
+  <LogOut size={16} />
+  <span>logout</span>
+</div>
                   )}
                 </button>
               </>
@@ -447,7 +505,10 @@ export default function Header() {
                     <Loader />
                   </>
                 ) : (
-                  "login"
+                  <div className="flex items-center gap-2">
+  <LogIn size={16} />
+  <span>login</span>
+</div>
                 )}
 
               </button>

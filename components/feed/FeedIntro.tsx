@@ -71,8 +71,12 @@ export default async function FeedIntro() {
 
           <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wide text-blue-800">
 
-            <span>
+            {/* <span>
               {totalProjects}+ live listings
+            </span> */}
+
+            <span>
+              switchwaters.com
             </span>
 
             <span className="text-blue-300">
@@ -80,7 +84,7 @@ export default async function FeedIntro() {
             </span>
 
             <span>
-              find your waters
+              find your current
             </span>
 
           </div>
@@ -88,15 +92,14 @@ export default async function FeedIntro() {
           <h1
             className="
               mt-2
-              max-w-2xl
+              max-w-sm
               text-2xl font-bold leading-tight text-blue-950
               sm:text-3xl
               md:text-4xl
             "
           >
 
-            dont drift currents,
-            switchwaters.com
+            find right candidate, for the right job. register for free.
 
           </h1>
 
@@ -109,7 +112,7 @@ export default async function FeedIntro() {
             "
           >
 
-            a habitat for marketers, operators, creators, freelancers and teams navigating changing waters.
+            a habitat for marketers, operators, creators, freelancers and teams navigating careers.
 
           </p>
 

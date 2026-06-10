@@ -44,7 +44,7 @@ export default async function HomePage({
         {JSON.stringify(structuredData)}
       </Script>
 
-    <main className="min-h-screen">
+    <div className="min-h-screen">
 
       <div className="mx-auto flex max-w-6xl gap-4 p-4">
 
@@ -57,7 +57,7 @@ export default async function HomePage({
 
       </div>
 
-    </main>
+    </div>
     </>
   );
 }

@@ -351,7 +351,7 @@ export default function ContactPage() {
                 hover:bg-white
               "
             >
-              debug
+              send debug
             </a>
 
           </div>
