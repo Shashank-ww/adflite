@@ -27,10 +27,12 @@ type Props = {
 
   defaultName: string;
 
-  updateProfile: (
+   updateProfile: (
     formData: FormData
-  ) => Promise<void>;
-};
+  ) => Promise<{
+    success: boolean;
+  }>;
+}
 
 export default function EditProfileForm({
   user,
