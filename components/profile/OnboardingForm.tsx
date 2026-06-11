@@ -13,10 +13,22 @@ type Props = {
     email: string;
     image: string;
     username: string | null;
+
+    headline?: string | null;
+    location?: string | null;
+    bio?: string | null;
+
+    experience?: number | null;
+
+    resumeUrl?: string | null;
   };
 };
 
-const [
+export default function OnboardingForm({
+  user,
+}: Props) {
+
+  const [
   usernameSuggestions,
   setUsernameSuggestions,
 ] = useState<string[]>([]);
@@ -28,10 +40,6 @@ useEffect(() => {
   );
 
 }, []);
-
-export default function OnboardingForm({
-  user,
-}: Props) {
 
   const { showToast } = useToast();
 
@@ -309,7 +317,7 @@ export default function OnboardingForm({
           type="text"
           name="headline"
           required
-          placeholder="media buyer · growth marketer"
+          placeholder="performance marketer · media buyer · growth strategist"
           className="w-full border border-gray-300 px-3 py-2 outline-none"
         />
 
@@ -347,7 +355,7 @@ export default function OnboardingForm({
         <input
           type="text"
           name="skills"
-          placeholder="meta ads, seo, analytics"
+          placeholder="performance marketing, paid media, analytics"
           className="w-full border border-gray-300 px-3 py-2 outline-none"
         />
 
@@ -371,6 +379,35 @@ export default function OnboardingForm({
         />
 
       </div>
+
+      <div>
+
+  <label className="mb-2 block text-sm font-bold">
+
+    resume
+
+  </label>
+
+  <input
+    type="file"
+    name="resume"
+    accept=".pdf"
+    className="
+      w-full
+      border
+      border-gray-300
+      px-3
+      py-2
+    "
+  />
+
+  <p className="mt-2 text-xs text-gray-500">
+
+    PDF only. You can update this later.
+
+  </p>
+
+</div>
 
       <button
         type="submit"

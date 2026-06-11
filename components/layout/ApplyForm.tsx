@@ -202,10 +202,11 @@ export default function ApplyForm({
     disabled={pending || disabled}
     className="
       flex items-center gap-2
-      border border-blue-500
-      bg-green-600
+      border border-emerald-500
+      bg-emerald-600
       px-3 py-2
       text-sm font-medium
+      text-white
       disabled:opacity-50
       cursor-pointer
     "

@@ -6,7 +6,7 @@ import {
 } from "react";
 
 import { useToast } from "@/components/providers/ToastProvider";
-import { deleteProfile } from "@/actions/profileActions";
+import { deleteProfile, removeResume } from "@/actions/profileActions";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { generateUsernameSuggestions } from "@/lib/data/usernameSuggestions";
@@ -25,15 +25,14 @@ type Props = {
     languages: string[];
     resumeUrl: string | null;
     resumeUpdatedAt: Date | null;
+    resumeFileName: string | null;
   };
 
   defaultName: string;
 
    updateProfile: (
     formData: FormData
-  ) => Promise<{
-    success: boolean;
-  }>;
+  ) => Promise<void>;
 }
 
 export default function EditProfileForm({
@@ -725,19 +724,80 @@ try {
     }}
   />
 
+<div className="flex gap-2">
+
   <label
     htmlFor="resumeUpload"
     className="
-      inline-flex items-center gap-2
-      border border-gray-300
-      px-3 py-2
+      inline-flex
+      items-center
+      gap-2
+      border
+      border-gray-300
+      px-3
+      py-2
       text-xs
       cursor-pointer
       hover:bg-gray-50
     "
   >
-    {uploading ? "uploading..." : "upload / replace resume"}
+    {uploading
+      ? "uploading..."
+      : resumeUrl
+      ? "replace resume"
+      : "upload resume"}
   </label>
+
+  <p className="truncate">
+  {user.resumeFileName ||
+    "resume uploaded"}
+</p>
+
+  {resumeUrl && (
+
+    <button
+      type="button"
+      onClick={async () => {
+
+        const confirmed =
+          confirm(
+            "remove current resume?"
+          );
+
+        if (!confirmed) {
+          return;
+        }
+
+        const result =
+          await removeResume();
+
+        if (result.success) {
+
+          setResumeUrl("");
+
+          setResumeUpdatedAt("");
+
+          showToast(
+            "resume removed"
+          );
+        }
+      }}
+      className="
+        border
+        border-red-300
+        px-3
+        py-2
+        text-xs
+        text-red-600
+        hover:bg-red-50
+      "
+    >
+      remove
+    </button>
+
+  )}
+
+</div>
 
 </div>
 

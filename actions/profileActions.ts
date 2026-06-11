@@ -7,6 +7,8 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
 
 export async function updateProfile(
   formData: FormData
@@ -97,11 +99,11 @@ export async function updateProfile(
 
   revalidatePath(`/u/${username}`);
 
-  return {
-    success: true,
-  };
+redirect("/profile");
 
 }
+
+
 
 export async function deleteProfile() {
 
@@ -138,6 +140,34 @@ export async function deleteProfile() {
   });
 
   revalidatePath("/");
+
+  return {
+    success: true,
+  };
+}
+
+
+export async function removeResume() {
+
+  const session =
+    await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    throw new Error("Unauthorized");
+  }
+
+  await prisma.user.update({
+    where: {
+      email: session.user.email,
+    },
+
+    data: {
+      resumeUrl: null,
+      resumeFileName: null,
+      resumeSize: null,
+      resumeUpdatedAt: null,
+    },
+  });
 
   return {
     success: true,

@@ -21,12 +21,33 @@ export default async function EditProfilePage() {
     redirect("/");
   }
 
-  const user =
-    await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
+const user =
+  await prisma.user.findUnique({
+    where: {
+      email: session.user.email,
+    },
+
+    select: {
+      name: true,
+      username: true,
+
+      headline: true,
+      bio: true,
+      location: true,
+
+      status: true,
+
+      hourlyRate: true,
+      experience: true,
+
+      skills: true,
+      languages: true,
+
+      resumeUrl: true,
+      resumeUpdatedAt: true,
+      resumeFileName: true,
+    },
+  });
 
   if (!user) {
     redirect("/");
