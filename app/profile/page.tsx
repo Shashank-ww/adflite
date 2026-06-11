@@ -272,6 +272,81 @@ export default async function ProfilePage() {
 
         )}
 
+        {/* RESUME DETAILS */}
+
+        {/* RESUME */}
+
+<div className="border-b border-gray-300 p-6">
+
+  <div className="flex items-center justify-between">
+
+    <h2 className="font-bold">
+      resume
+    </h2>
+
+    <Link
+      href="/profile/edit"
+      className="text-xs hover:underline"
+    >
+      manage resume
+    </Link>
+
+  </div>
+
+  {user.resumeUrl ? (
+
+    <div className="mt-4">
+
+      <a
+        href={user.resumeUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+          inline-flex items-center
+          border border-gray-300
+          px-3 py-2
+          text-sm
+          hover:bg-gray-50
+        "
+      >
+        view resume
+      </a>
+
+      <div className="mt-3 text-xs text-gray-500">
+
+        {user.resumeFileName && (
+          <p>{user.resumeFileName}</p>
+        )}
+
+        {user.resumeSize && (
+          <p>
+            {(user.resumeSize / 1024 / 1024).toFixed(2)} MB
+          </p>
+        )}
+
+        {user.resumeUpdatedAt && (
+          <p>
+            updated{" "}
+            {new Date(
+              user.resumeUpdatedAt
+            ).toLocaleDateString()}
+          </p>
+        )}
+
+      </div>
+
+    </div>
+
+  ) : (
+
+    <p className="mt-4 text-sm text-gray-500">
+      no resume uploaded
+    </p>
+
+  )}
+
+</div>
+
         {/* LISTINGS */}
 
         <div className="p-6">

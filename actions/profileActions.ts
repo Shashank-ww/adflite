@@ -8,8 +8,6 @@ import { getServerSession } from "next-auth";
 
 import { revalidatePath } from "next/cache";
 
-import { redirect } from "next/navigation";
-
 export async function updateProfile(
   formData: FormData
 ) {
@@ -93,7 +91,7 @@ export async function updateProfile(
     },
   });
 
-  revalidatePath("/");
+  revalidatePath("/profile");
 
   revalidatePath("/profile/onboarding");
 

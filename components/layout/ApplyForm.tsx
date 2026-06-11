@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 
 import { applyToProject } from "@/actions/applicationActions";
 import { useToast } from "@/components/providers/ToastProvider";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   projectId: string;
@@ -18,6 +19,8 @@ type Props = {
   applicantName?: string | null;
 
   applicantEmail?: string | null;
+
+  disabled?: boolean;
 };
 
 export default function ApplyForm({
@@ -26,6 +29,7 @@ export default function ApplyForm({
   projectTitle,
   applicantName,
   applicantEmail,
+  disabled = false,
 }: Props) {
   const router = useRouter();
 
@@ -35,9 +39,6 @@ export default function ApplyForm({
     useTransition();
 
   const [phone, setPhone] =
-    useState("");
-
-  const [resume, setResume] =
     useState("");
 
   return (
@@ -68,100 +69,156 @@ export default function ApplyForm({
       {/* FORM */}
 
       <form
-        action={(formData) => {
+  action={(formData) => {
 
-          formData.append(
-            "projectId",
-            projectId
-          );
+    formData.append(
+      "projectId",
+      projectId
+    );
 
-          startTransition(async () => {
+    startTransition(async () => {
 
-            await applyToProject(
-              formData
-            );
+      const result =
+        await applyToProject(
+          formData
+        );
 
-            showToast(
-              `Thanks for applying!`
-            );
+      if (
+        result.status ===
+        "resume_required"
+      ) {
 
-            router.push(
-              `/projects/${projectSlug}`
-            );
+        showToast(
+          "please upload a resume first"
+        );
 
-            router.refresh();
+        router.push(
+          "/profile/edit"
+        );
 
-          });
-        }}
-        className="flex flex-col gap-3 md:flex-row"
-      >
+        return;
+      }
 
-        {/* RESUME */}
+      if (
+        result.status ===
+        "already_applied"
+      ) {
 
-        <input
-          type="text"
-          name="resume"
-          value={resume}
-          onChange={(e) =>
-            setResume(e.target.value)
-          }
-          placeholder="resume / linkedin / portfolio url"
-          required
-          className="
-            flex-[1.5]
-            border border-gray-300
-            px-3 py-2
-            text-sm
-            outline-none
-          "
-        />
+        showToast(
+          "already applied"
+        );
+
+        return;
+      }
+
+      showToast(
+        "application submitted"
+      );
+
+      router.push(
+        `/projects/${projectSlug}`
+      );
+
+      router.refresh();
+
+    });
+
+  }}
+  className="space-y-4"
+>
 
         {/* PHONE */}
 
-        <input
-          type="tel"
-          name="phone"
-          value={phone}
-          onChange={(e) => {
+        <div>
 
-            const value =
-              e.target.value.replace(
-                /\D/g,
-                ""
-              );
+  <label className="mb-2 block text-sm font-medium">
 
-            if (value.length <= 10) {
-              setPhone(value);
-            }
-          }}
-          placeholder="phone (optional)"
-          maxLength={10}
-          className="
-            flex-1
-            border border-gray-300
-            px-3 py-2
-            text-sm
-            outline-none
-          "
-        />
+    phone number
+
+  </label>
+
+  <input
+    type="tel"
+    name="phone"
+    value={phone}
+    onChange={(e) => {
+
+      const value =
+        e.target.value.replace(
+          /\D/g,
+          ""
+        );
+
+      if (value.length <= 10) {
+        setPhone(value);
+      }
+
+    }}
+    placeholder="9876543210"
+    maxLength={10}
+    className="
+      w-full
+      border
+      border-gray-300
+      px-3
+      py-2
+      outline-none
+    "
+  />
+
+</div>
+
+{/* MESSAGE TO RECRUITER */}
+
+        <div>
+
+  <label className="mb-2 block text-sm font-medium">
+
+    message to recruiter
+
+  </label>
+
+  <textarea
+    name="message"
+    rows={5}
+    placeholder="Hi, I have relevant experience for this opportunity and would love to discuss further."
+    className="
+      w-full
+      border
+      border-gray-300
+      px-3
+      py-2
+      outline-none
+    "
+  />
+
+</div>
 
         {/* SUBMIT */}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="
-            cursor-pointer
-            border border-gray-400
-            px-4 py-1
-            text-sm
-            hover:bg-blue-50
-          "
-        >
-          {pending
-            ? "applying..."
-            : "fast apply"}
-        </button>
+<div className="flex justify-end">
+  <button
+    type="submit"
+    disabled={pending || disabled}
+    className="
+      flex items-center gap-2
+      border border-blue-500
+      bg-green-600
+      px-3 py-2
+      text-sm font-medium
+      disabled:opacity-50
+      cursor-pointer
+    "
+  >
+    {pending && <Loader2 size={16} />}
+
+    {disabled
+      ? "Upload Resume"
+      : pending
+      ? "Applying..."
+      : "Send Application"}
+  </button>
+</div>
 
       </form>
 

@@ -28,6 +28,11 @@ model User {
 
   status String?
 
+  resumeUrl String?
+  resumeUpdatedAt DateTime?
+  resumeFileName String?
+  resumeSize Int?
+
   allowMessages Boolean @default(true)
   allowPings Boolean @default(true)
   profileVisibility String @default("public")

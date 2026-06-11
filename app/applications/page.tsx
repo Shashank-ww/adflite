@@ -9,6 +9,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { withdrawApplication } from "@/actions/applicationActions";
 
+import ResumeViewer from "@/components/ui/resume-viewer";
+
 export default async function ApplicationsPage() {
   const session =
     await getServerSession(authOptions);
@@ -40,7 +42,21 @@ export default async function ApplicationsPage() {
         include: {
           applications: {
             include: {
-              user: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  username: true,
+
+                  headline: true,
+                  location: true,
+                  experience: true,
+
+                  resumeUrl: true,
+
+                  email: true,
+                },
+              },
             },
 
             orderBy: {
@@ -129,49 +145,75 @@ export default async function ApplicationsPage() {
                       </p>
                     </Link>
 
-                    <div className="mt-2 space-y-1 text-sm text-gray-700">
+<div className="mt-3">
 
-                      <p>
-                        applicant:{" "}
-                        <span className="font-medium text-black">
-                          {
-                            application.user
-                              ?.name ||
-                            "anonymous"
-                          }
-                        </span>
-                      </p>
+  <div className="mb-3">
 
-                      <p>
-                        email:{" "}
-                        {
-                          application.email
-                        }
-                      </p>
+    <p className="font-semibold text-black">
 
-                      {application.phone && (
-                        <p>
-                          phone:{" "}
-                          {
-                            application.phone
-                          }
-                        </p>
-                      )}
+      {application.user?.name ||
+        "anonymous"}
 
-                      <p>
-                        resume:{" "}
+    </p>
 
-                        <a
-                          href={
-                            application.resume
-                          }
-                          target="_blank"
-                          className="underline"
-                        >
-                          view link
-                        </a>
+    {application.user?.headline && (
 
-                      </p>
+      <p className="text-sm text-gray-600">
+
+        {application.user.headline}
+
+      </p>
+
+    )}
+
+  </div>
+
+  <div className="grid gap-2 text-sm text-gray-700">
+
+    <p>
+      email: {application.email}
+    </p>
+
+    {application.phone && (
+      <p>
+        phone: {application.phone}
+      </p>
+    )}
+
+    {application.user?.location && (
+      <p>
+        location:{" "}
+        {application.user.location}
+      </p>
+    )}
+
+    {application.user?.experience && (
+      <p>
+        experience:{" "}
+        {application.user.experience} years
+      </p>
+    )}
+
+<div className="mt-2 flex items-center gap-3">
+
+  {application.resume ? (
+
+    <ResumeViewer
+      url={application.resume}
+    />
+
+  ) : (
+
+    <span className="text-xs text-gray-400">
+
+      no resume uploaded
+
+    </span>
+
+  )}
+
+</div>
+
 
                       <p className="text-xs text-gray-500">
 
@@ -183,6 +225,79 @@ export default async function ApplicationsPage() {
 
                       </p>
 
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between gap-4">
+
+                       {/* LEFT SIDE */}
+
+                        <div className="flex flex-wrap gap-2">
+
+                          <Link
+                            href={`/messages?user=${application.user.id}`}
+                            className="
+                              border
+                              border-blue-300
+                              px-3
+                              py-2
+                              text-xs
+                              hover:bg-blue-50
+                            "
+                          >
+                            message
+                          </Link>
+
+                          <Link
+                            href={`/u/${application.user.username}`}
+                            className="
+                              border
+                              border-gray-300
+                              px-3
+                              py-2
+                              text-xs
+                              hover:bg-gray-50
+                            "
+                          >
+                            profile
+                          </Link>
+
+                        </div>
+
+                        {/* RIGHT SIDE */}
+
+                        <div className="flex flex-wrap gap-2">
+
+                          <button
+                            className="
+                              border
+                              border-green-300
+                              px-3
+                              py-2
+                              text-xs
+                              text-green-700
+                              hover:bg-green-50
+                            "
+                          >
+                            shortlist
+                          </button>
+
+                          <button
+                            className="
+                              border
+                              border-red-300
+                              px-3
+                              py-2
+                              text-xs
+                              text-red-700
+                              hover:bg-red-50
+                            "
+                          >
+                            reject
+                          </button>
+
+                        </div>
+
+                      </div>
                     </div>
 
                   </div>

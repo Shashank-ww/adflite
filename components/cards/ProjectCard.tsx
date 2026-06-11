@@ -23,6 +23,7 @@ import {
 import { pingProject } from "@/actions/pingActions";
 
 import { useToast } from "@/components/providers/ToastProvider";
+import { withdrawApplication } from "@/actions/applicationActions";
 
 type Variant =
   | "feed"
@@ -125,12 +126,11 @@ export default function ProjectCard({
    ---------------------------------------
   */
 
-  const [applied] = useState(
-    project.applications?.some(
-      (a) =>
-        a.userId === sessionUserId
-    ) ?? false
-  );
+const applied =
+  project.applications?.some(
+    (a) =>
+      a.userId === sessionUserId
+  ) ?? false;
 
   /*
    ---------------------------------------
@@ -481,10 +481,47 @@ export default function ProjectCard({
                       }
                     `}
                   >
-                    {applied
-                      ? "applied"
-                      : "apply"}
+                    {applied ? (
+                      <span className="text-green-700">
+                        applied
+                      </span>
+                    ) : (
+                      "apply"
+                    )}
                   </button>
+
+                  {applied && (
+                      <>
+                        <span className="text-gray-300">
+                          |
+                        </span>
+
+                        <button
+                          onClick={() => {
+                            startTransition(
+                              async () => {
+
+                                await withdrawApplication(
+                                  project.id
+                                );
+
+                                router.refresh();
+
+                                showToast(
+                                  "application withdrawn"
+                                );
+                              }
+                            );
+                          }}
+                          className="
+                            text-red-600
+                            hover:underline
+                          "
+                        >
+                          withdraw
+                        </button>
+                      </>
+                    )}
 
                   <span className="text-gray-300">
                     |

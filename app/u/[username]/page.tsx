@@ -239,6 +239,55 @@ export default async function PublicProfilePage({
 
         )}
 
+        {/* RESUME DETAILS */}
+
+        {/* RESUME */}
+
+{user.resumeUrl && (
+
+  <div className="border-b border-gray-300 p-6">
+
+    <h2 className="font-bold">
+      resume
+    </h2>
+
+    <div className="mt-4">
+
+      <a
+        href={user.resumeUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+          inline-flex items-center
+          border border-gray-300
+          px-3 py-2
+          text-sm
+          hover:bg-gray-50
+        "
+      >
+        view resume
+      </a>
+
+      <div className="mt-3 text-xs text-gray-500">
+
+        {user.resumeFileName && (
+          <p>{user.resumeFileName}</p>
+        )}
+
+        {user.resumeSize && (
+          <p>
+            {(user.resumeSize / 1024 / 1024).toFixed(2)} MB
+          </p>
+        )}
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
+
         {/* LISTINGS */}
 
         <div className="p-6">

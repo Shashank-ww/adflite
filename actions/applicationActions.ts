@@ -12,47 +12,46 @@ import { revalidatePath } from "next/cache";
    APPLY TO PROJECT
 ========================= */
 
-export async function applyToProject(
-  formData: FormData
-) {
-  const session =
-    await getServerSession(authOptions);
+export async function applyToProject(formData: FormData) {
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
     throw new Error("Unauthorized");
   }
 
-  const user =
-    await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user.email,
+    },
+  });
 
   if (!user) {
     throw new Error("User not found");
   }
 
-const projectId =
-  formData.get(
-    "projectId"
-  ) as string;
+  if (!user.resumeUrl) {
+  return {
+    ok: false,
+    status: "resume_required",
+  };
+}
 
-const email = user.email;
+  const projectId = formData.get("projectId") as string;
 
-const resume =
-  formData.get("resume") as string;
+  // AUTO-RESUME SOURCE (IMPORTANT)
+  const resumeUrl = user.resumeUrl || null;
 
-  const phone =
-    formData.get("phone") as string;
+  const message =
+  formData.get("message") as string;
 
-  const existing =
-    await prisma.application.findFirst({
-      where: {
-        userId: user.id,
-        projectId,
-      },
-    });
+  const phone = formData.get("phone") as string;
+
+  const existing = await prisma.application.findFirst({
+    where: {
+      userId: user.id,
+      projectId,
+    },
+  });
 
   if (existing) {
     return {
@@ -61,26 +60,67 @@ const resume =
     };
   }
 
-await prisma.application.create({
+  const project =
+  await prisma.project.findUnique({
+    where: {
+      id: projectId,
+    },
+
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+
+      user: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  await prisma.application.create({
+    data: {
+      user: {
+        connect: { id: user.id },
+      },
+      project: {
+        connect: { id: projectId },
+      },
+      email: user.email,
+      phone,
+
+      // AUTOMATIC URL
+      resume: user.resumeUrl,
+    },
+  });
+
+  if (
+  message?.trim() &&
+  project?.user?.id
+) {
+
+await prisma.message.create({
   data: {
-    user: {
-      connect: {
-        id: user.id,
-      },
-    },
-    project: {
-      connect: {
-        id: projectId,
-      },
-    },
-    email,
-    resume,
-    phone,
+    senderId: user.id,
+
+    receiverId:
+      project.user.id,
+
+    projectId,
+
+    text: `Application for: ${project.title}
+
+${message.trim()}`,
   },
 });
 
-  revalidatePath("/");
-  revalidatePath("/applications");
+}
+
+revalidatePath("/");
+revalidatePath("/applications");
+revalidatePath(`/projects/${project?.slug}`);
+revalidatePath("/messages");
 
   return {
     ok: true,

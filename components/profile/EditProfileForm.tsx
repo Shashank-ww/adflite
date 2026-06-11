@@ -23,6 +23,8 @@ type Props = {
     experience: number | null;
     skills: string[];
     languages: string[];
+    resumeUrl: string | null;
+    resumeUpdatedAt: Date | null;
   };
 
   defaultName: string;
@@ -41,6 +43,12 @@ export default function EditProfileForm({
 }: Props) {
 
   const { showToast } = useToast();
+
+const [uploading, setUploading] = useState(false);
+const [resumeUrl, setResumeUrl] = useState(user.resumeUrl || null);
+const [resumeUpdatedAt, setResumeUpdatedAt] = useState(
+  user.resumeUpdatedAt ? new Date(user.resumeUpdatedAt).toString() : null
+);
 
   const [displayName, setDisplayName] =
     useState(user.name || "");
@@ -158,6 +166,60 @@ useEffect(() => {
 
 const [showDangerZone, setShowDangerZone] =
   useState(false);
+
+  async function uploadResume(
+  file: File
+) {
+  try {
+
+    setUploading(true);
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      "file",
+      file
+    );
+
+    const res =
+      await fetch(
+        "/api/resume/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        data.error
+      );
+    }
+
+    setResumeUrl(
+      data.url
+    );
+
+    showToast(
+      "resume uploaded"
+    );
+
+  } catch {
+
+    showToast(
+      "unable to upload resume"
+    );
+
+  } finally {
+
+    setUploading(false);
+
+  }
+}
 
   return (
     <form
@@ -577,6 +639,109 @@ try {
         />
 
       </div>
+
+      {/* RESUME ACTIONS */}
+
+     <div className="border border-gray-300 p-4 bg-white">
+
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="text-sm font-bold">resume</h3>
+
+    {resumeUrl && (
+      <a
+        href={resumeUrl}
+        target="_blank"
+        className="text-xs text-blue-600 hover:underline"
+      >
+        view current
+      </a>
+    )}
+  </div>
+
+  {resumeUrl ? (
+    <div className="text-xs text-gray-600 mb-3">
+      <p className="truncate">
+        current file uploaded
+      </p>
+
+      {resumeUpdatedAt && (
+        <p className="text-gray-400 mt-1">
+          updated: {new Date(resumeUpdatedAt).toLocaleString()}
+        </p>
+      )}
+    </div>
+  ) : (
+    <p className="text-xs text-gray-500 mb-3">
+      no resume uploaded yet
+    </p>
+  )}
+
+  <input
+    type="file"
+    accept="application/pdf"
+    id="resumeUpload"
+    className="hidden"
+    onChange={async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      if (file.type !== "application/pdf") {
+        alert("Only PDF allowed");
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Max 5MB allowed");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        setUploading(true);
+
+        const res = await fetch("/api/resume/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Upload failed");
+        }
+
+        setResumeUrl(data.url);
+        setResumeUpdatedAt(new Date().toString());
+
+        showToast("resume uploaded successfully");
+
+      } catch (err) {
+        showToast("failed to upload resume");
+      } finally {
+        setUploading(false);
+      }
+    }}
+  />
+
+  <label
+    htmlFor="resumeUpload"
+    className="
+      inline-flex items-center gap-2
+      border border-gray-300
+      px-3 py-2
+      text-xs
+      cursor-pointer
+      hover:bg-gray-50
+    "
+  >
+    {uploading ? "uploading..." : "upload / replace resume"}
+  </label>
+
+</div>
+
+{/* SUBMIT ACTIONS */}
 
 <div className="flex gap-2">
 
