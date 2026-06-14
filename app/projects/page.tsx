@@ -7,10 +7,60 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 import ProjectCard from "@/components/cards/ProjectCard";
+import SearchStrip from "@/components/feed/SearchStrip";
 
-export default async function ProjectsPage() {
+type Props = {
+  searchParams: Promise<{
+    q?: string;
+    category?: string;
+    location?: string;
+    sort?: string;
+  }>;
+};
+
+export default async function ProjectsPage({
+  searchParams,
+}: Props) {
+
+const params = await searchParams;
+
+const query =
+  params.q ?? "";
+
+const category =
+  params.category ?? "all";
+
+const location =
+  params.location ?? "";
+
+const sort =
+  params.sort ?? "newest";
+
   const session =
     await getServerSession(authOptions);
+
+    const where = {
+  ...(query && {
+    OR: [
+      {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+      {
+        description: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+    ],
+  }),
+
+  ...(category !== "all" && {
+    category,
+  }),
+};
 
   const projects =
     await prisma.project.findMany({
@@ -25,6 +75,9 @@ export default async function ProjectsPage() {
         timeline: true,
         category: true,
         location: true,
+
+        viewCount: true,
+        clickCount: true,
 
         createdAt: true,
 
@@ -46,6 +99,7 @@ export default async function ProjectsPage() {
           select: {
             pings: true,
             applications: true,
+            savedProjects: true,
           },
         },
 
@@ -112,7 +166,22 @@ export default async function ProjectsPage() {
 
       </div>
 
-      {/* LIST */}
+      
+<div
+  className="
+    sticky top-0 z-30
+    border-b border-gray-300
+    bg-white
+  "
+>
+  <SearchStrip
+    query={query}
+    category={category}
+    basePath="/projects"
+  />
+</div>
+
+      {/* FEED LIST */}
 
       <section
         className="

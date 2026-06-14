@@ -3,6 +3,16 @@
 import Link from "next/link";
 
 import {
+  Eye,
+  MousePointerClick,
+  Bell,
+  Users,
+  Bookmark,
+  Star,
+  BellRing,
+} from "lucide-react";
+
+import {
   useEffect,
   useState,
   useTransition,
@@ -17,6 +27,7 @@ import {
 
 import {
   deleteProject,
+  incrementProjectClick,
   saveProject,
 } from "@/actions/projectActions";
 
@@ -43,11 +54,15 @@ type Props = {
     category: string | null;
     location: string | null;
 
+    viewCount: number;
+    clickCount: number;
+
     createdAt: Date;
 
     _count: {
       pings: number;
       applications: number;
+      savedProjects: number;
     };
 
     savedProjects?: {
@@ -84,6 +99,7 @@ export default function ProjectCard({
   sessionUserEmail,
   variant = "feed",
 }: Props) {
+
   const router = useRouter();
 
   const { showToast } = useToast();
@@ -100,6 +116,9 @@ export default function ProjectCard({
   const isOwner =
     sessionUserEmail ===
     project.user.email;
+
+  const showFullAnalytics =
+  !!sessionUserId || isOwner;
 
   /*
    ---------------------------------------
@@ -218,6 +237,22 @@ const applied =
 
   /*
    ---------------------------------------
+   CLICKS FROM USERS ONLY
+   ---------------------------------------
+  */
+
+async function handleProjectClick() {
+  await incrementProjectClick(
+    project.id
+  );
+
+  router.push(
+    `/projects/${project.slug}`
+  );
+}
+
+  /*
+   ---------------------------------------
    VARIANT FLAGS
    ---------------------------------------
   */
@@ -235,7 +270,9 @@ const applied =
     isDirectory || isDetail;
 
   const showFooter =
-    isFeed || isDetail;
+    isFeed ||
+    isDirectory ||
+    isDetail;
 
   return (
     <article
@@ -256,6 +293,7 @@ const applied =
 
           <Link
             href={`/projects/${project.slug}`}
+            onClick={handleProjectClick}
             className="
               text-xl font-semibold
               leading-6 text-black
@@ -319,24 +357,6 @@ const applied =
             </span>
           </div>
         </div>
-
-        {/* DIRECTORY SIDE META */}
-
-        {isDirectory && (
-          <div
-            className="
-              shrink-0 text-right
-              text-xs text-gray-400
-            "
-          >
-            <p>
-              {
-                project._count.pings
-              }{" "}
-              pings
-            </p>
-          </div>
-        )}
       </div>
 
       {/* DESCRIPTION */}
@@ -429,6 +449,60 @@ const applied =
           )}
         </div>
       )}
+
+      {/* ANALYTICS */}
+
+{(isDirectory || isDetail) && (
+  <div
+    className="
+      mt-4
+      border border-slate-200
+      bg-slate-100
+    "
+  >
+    <div
+      className="
+        flex flex-wrap
+        items-center
+        gap-6
+        px-3 py-2
+        text-[11px]
+        text-gray-600
+      "
+    >
+      {showFullAnalytics && (
+        <>
+          <span className="flex items-center gap-1">
+            <Eye size={13} />
+            {project.viewCount} Views
+          </span>
+
+          <span className="flex items-center gap-1">
+            <MousePointerClick size={13} />
+            {project.clickCount} Clicks
+          </span>
+        </>
+      )}
+
+      <span className="flex items-center gap-1">
+        <BellRing size={13} />
+        {pingCount} Pings
+      </span>
+
+      <span className="flex items-center gap-1">
+        <Users size={13} />
+        {project._count.applications} Applicants
+      </span>
+
+      {showFullAnalytics && (
+        <span className="flex items-center gap-1">
+          <Star size={13} />
+          {project._count.savedProjects} Saves
+        </span>
+      )}
+    </div>
+  </div>
+)}
 
       {/* FOOTER */}
 
@@ -579,7 +653,7 @@ const applied =
 
               {/* FEED ONLY */}
 
-              {isFeed && (
+              {(isFeed || isDirectory) && (
                 <>
                   <span className="text-gray-300">
                     |
@@ -587,6 +661,7 @@ const applied =
 
                   <Link
                     href={`/projects/${project.slug}`}
+                    onClick={handleProjectClick}
                     className="
                       text-gray-600
                       hover:underline
@@ -732,21 +807,6 @@ const applied =
                   )}
                 </>
               )}
-            </div>
-
-            {/* PING COUNT */}
-
-            <div
-              className="
-                shrink-0 border
-                border-gray-300
-                bg-white
-                px-2 py-1
-                text-[11px]
-                text-gray-600
-              "
-            >
-              {pingCount} pings
             </div>
           </div>
         </div>

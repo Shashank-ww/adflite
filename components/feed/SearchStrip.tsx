@@ -47,13 +47,14 @@ const categories = [
 
 type Props = {
   query?: string;
-
   category?: string;
+  basePath?: string;
 };
 
 export default function SearchStrip({
   query,
   category,
+  basePath = "/",
 }: Props) {
 
   const router = useRouter();
@@ -90,9 +91,8 @@ export default function SearchStrip({
 
       router.push(
         activeCategory !== "all"
-          ? `/?category=${activeCategory}`
-          : "/"
-      );
+        ? `${basePath}?${activeCategory}`
+        : basePath);
 
       return;
     }
@@ -117,7 +117,7 @@ export default function SearchStrip({
     }
 
     router.push(
-      `/?${params.toString()}`
+      `${basePath}?${params.toString()}`
     );
   }
 
@@ -129,7 +129,7 @@ export default function SearchStrip({
       "resetting the waters..."
     );
 
-    router.push("/");
+    router.push(basePath);
   }
 
   return (
@@ -280,8 +280,8 @@ export default function SearchStrip({
 
           const href =
             params.toString()
-              ? `/?${params.toString()}`
-              : "/";
+              ? `${basePath}?${params.toString()}`
+              : basePath;
 
           return (
             <Link

@@ -74,6 +74,9 @@ export default async function ProjectDetailPage({
         category: true,
         location: true,
 
+        viewCount: true,
+        clickCount: true,
+
         createdAt: true,
 
         user: {
@@ -94,6 +97,7 @@ export default async function ProjectDetailPage({
           select: {
             pings: true,
             applications: true,
+            savedProjects: true,
           },
         },
 
@@ -126,6 +130,39 @@ export default async function ProjectDetailPage({
   if (!project) {
     notFound();
   }
+
+await prisma.project.update({
+  where: {
+    id: project.id,
+  },
+  data: {
+    viewCount: {
+      increment: 1,
+    },
+  },
+});
+
+project.viewCount += 1;
+
+// incase session is required, remove the above and use the below. otherwise all views are counted!
+
+// if (
+//   session?.user?.email !==
+//   project.user.email
+// ) {
+//   await prisma.project.update({
+//     where: {
+//       id: project.id,
+//     },
+//     data: {
+//       viewCount: {
+//         increment: 1,
+//       },
+//     },
+//   });
+
+//   project.viewCount += 1;
+// }
 
   const alreadyApplied =
     project.applications?.some(

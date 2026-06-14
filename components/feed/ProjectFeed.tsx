@@ -138,6 +138,7 @@ const projects =
         <SearchStrip
           query={query}
           category={category}
+          basePath="/"
         />
 
 {projects.length > 0 ? (

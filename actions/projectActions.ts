@@ -246,6 +246,34 @@ export async function updateProject(
 }
 
 /* =========================
+   +1 CLICKED PROJECT
+========================= */
+
+export async function incrementProjectClick(
+  projectId: string
+) {
+  const session =
+    await getServerSession(
+      authOptions
+    );
+
+  if (!session?.user?.id) {
+    return;
+  }
+
+  await prisma.project.update({
+    where: {
+      id: projectId,
+    },
+    data: {
+      clickCount: {
+        increment: 1,
+      },
+    },
+  });
+}
+
+/* =========================
    DELETE PROJECT
 ========================= */
 

@@ -69,6 +69,8 @@ model Project {
 
   location String?
 
+  viewCount  Int @default(0)
+  clickCount Int @default(0)
   createdAt DateTime @default(now())
 
   userId String

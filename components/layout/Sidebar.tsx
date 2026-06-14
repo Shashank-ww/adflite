@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 import { prisma } from "@/lib/prisma";
-import { BellRing, FileUser, FolderGit, FolderTree, MessagesSquare, Save, Telescope } from "lucide-react";
+import { BellRing, FileUser, FolderGit, FolderTree, MessagesSquare, Save, Star, Telescope } from "lucide-react";
 
 const categories = [
   {
@@ -377,7 +377,7 @@ export default async function Sidebar() {
       hover:text-black
     "
   >
-    <Save size={16} strokeWidth={1.6} />
+    <Star size={16} strokeWidth={1.6} />
     saved
   </Link>
 
