@@ -78,6 +78,7 @@ export async function POST(
     {
       access: "public",
       addRandomSuffix: false,
+      allowOverwrite: true,
     }
   );
 

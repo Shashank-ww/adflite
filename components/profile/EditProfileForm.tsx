@@ -10,6 +10,7 @@ import { deleteProfile, removeResume } from "@/actions/profileActions";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { generateUsernameSuggestions } from "@/lib/data/usernameSuggestions";
+import ResumeViewer from "../ui/resume-viewer";
 
 type Props = {
   user: {
@@ -48,6 +49,10 @@ const [resumeUrl, setResumeUrl] = useState(user.resumeUrl || null);
 const [resumeUpdatedAt, setResumeUpdatedAt] = useState(
   user.resumeUpdatedAt ? new Date(user.resumeUpdatedAt).toString() : null
 );
+const [resumeFileName, setResumeFileName] =
+  useState(
+    user.resumeFileName ?? ""
+  );
 
   const [displayName, setDisplayName] =
     useState(user.name || "");
@@ -217,6 +222,31 @@ const [showDangerZone, setShowDangerZone] =
 
     setUploading(false);
 
+  }
+}
+
+async function handleRemoveResume() {
+  try {
+    const result =
+      await removeResume();
+
+    if (result.success) {
+      setResumeUrl("");
+      setResumeUpdatedAt("");
+      setResumeFileName("");
+
+      showToast(
+        "resume removed"
+      );
+    } else {
+      showToast(
+        "failed to remove resume"
+      );
+    }
+  } catch {
+    showToast(
+      "failed to remove resume"
+    );
   }
 }
 
@@ -641,160 +671,202 @@ try {
 
       {/* RESUME ACTIONS */}
 
-     <div className="border border-gray-300 p-4 bg-white">
+<div className="border border-gray-300 bg-white p-4">
 
-  <div className="flex items-center justify-between mb-3">
-    <h3 className="text-sm font-bold">resume</h3>
+  <div className="flex items-center justify-between">
 
-    {resumeUrl && (
-      <a
-        href={resumeUrl}
-        target="_blank"
-        className="text-xs text-blue-600 hover:underline"
-      >
-        view current
-      </a>
-    )}
+    <h3 className="text-sm font-bold">
+      Resume
+    </h3>
+
+    <span
+      className={`
+        text-xs
+        ${
+          resumeUrl
+            ? "text-green-600"
+            : "text-gray-500"
+        }
+      `}
+    >
+      {resumeUrl
+        ? "uploaded"
+        : "not uploaded"}
+    </span>
+
   </div>
 
   {resumeUrl ? (
-    <div className="text-xs text-gray-600 mb-3">
-      <p className="truncate">
-        current file uploaded
+
+    <div className="mt-3 text-xs text-gray-600">
+
+      <p className="font-medium truncate">
+        {resumeFileName || "resume.pdf"}  
       </p>
 
       {resumeUpdatedAt && (
-        <p className="text-gray-400 mt-1">
-          updated: {new Date(resumeUpdatedAt).toLocaleString()}
+        <p className="mt-1 text-gray-500">
+          Updated{" "}
+          {new Date(
+            resumeUpdatedAt
+          ).toLocaleDateString()}
         </p>
       )}
+
     </div>
+
   ) : (
-    <p className="text-xs text-gray-500 mb-3">
-      no resume uploaded yet
+
+    <p className="mt-3 text-xs text-gray-500">
+
+      Upload a PDF resume to apply
+      for projects faster.
+
     </p>
+
   )}
 
-  <input
-    type="file"
-    accept="application/pdf"
-    id="resumeUpload"
-    className="hidden"
-    onChange={async (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
 
-      if (file.type !== "application/pdf") {
-        alert("Only PDF allowed");
-        return;
+
+<input
+  type="file"
+  accept="application/pdf"
+  id="resumeUpload"
+  className="hidden"
+  onChange={async (e) => {
+    const file =
+      e.target.files?.[0];
+
+    if (!file) return;
+
+    if (
+      file.type !==
+      "application/pdf"
+    ) {
+      showToast(
+        "only pdf files allowed"
+      );
+      return;
+    }
+
+    if (
+      file.size >
+      5 * 1024 * 1024
+    ) {
+      showToast(
+        "max 5mb allowed"
+      );
+      return;
+    }
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      "file",
+      file
+    );
+
+    try {
+      setUploading(true);
+
+      const res =
+        await fetch(
+          "/api/resume/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+      const data =
+        await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.error
+        );
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Max 5MB allowed");
-        return;
-      }
+      setResumeUrl(
+        data.url
+      );
 
-      const formData = new FormData();
-      formData.append("file", file);
+      setResumeFileName(
+        file.name
+      );
 
-      try {
-        setUploading(true);
+      setResumeUpdatedAt(
+        new Date().toISOString()
+      );
 
-        const res = await fetch("/api/resume/upload", {
-          method: "POST",
-          body: formData,
-        });
+      showToast(
+        "resume uploaded"
+      );
+    } catch {
+      showToast(
+        "upload failed"
+      );
+    } finally {
+      setUploading(false);
+    }
+  }}
+/>
 
-        const data = await res.json();
+ <div className="mt-4 flex flex-wrap gap-2">
 
-        if (!res.ok) {
-          throw new Error(data.error || "Upload failed");
-        }
+  {resumeUrl && (
+    <>
+      <ResumeViewer
+        url={resumeUrl}
+      />
 
-        setResumeUrl(data.url);
-        setResumeUpdatedAt(new Date().toString());
-
-        showToast("resume uploaded successfully");
-
-      } catch (err) {
-        showToast("failed to upload resume");
-      } finally {
-        setUploading(false);
-      }
-    }}
-  />
-
-<div className="flex gap-2">
+      <a
+        href={resumeUrl}
+        download
+        className="
+          border border-gray-300
+          px-3 py-2
+          text-xs
+          hover:bg-gray-50
+        "
+      >
+        Download
+      </a>
+    </>
+  )}
 
   <label
     htmlFor="resumeUpload"
     className="
-      inline-flex
-      items-center
-      gap-2
-      border
-      border-gray-300
-      px-3
-      py-2
-      text-xs
       cursor-pointer
+      border border-gray-300
+      px-3 py-2
+      text-xs
       hover:bg-gray-50
     "
   >
     {uploading
-      ? "uploading..."
+      ? "Uploading..."
       : resumeUrl
-      ? "replace resume"
-      : "upload resume"}
+      ? "Replace"
+      : "Upload"}
   </label>
 
-  <p className="truncate">
-  {user.resumeFileName ||
-    "resume uploaded"}
-</p>
-
   {resumeUrl && (
-
     <button
       type="button"
-      onClick={async () => {
-
-        const confirmed =
-          confirm(
-            "remove current resume?"
-          );
-
-        if (!confirmed) {
-          return;
-        }
-
-        const result =
-          await removeResume();
-
-        if (result.success) {
-
-          setResumeUrl("");
-
-          setResumeUpdatedAt("");
-
-          showToast(
-            "resume removed"
-          );
-        }
-      }}
+      onClick={handleRemoveResume}
       className="
-        border
-        border-red-300
-        px-3
-        py-2
+        border border-red-300
+        px-3 py-2
         text-xs
         text-red-600
         hover:bg-red-50
       "
     >
-      remove
+      Remove
     </button>
-
   )}
 
 </div>

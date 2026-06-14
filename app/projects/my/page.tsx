@@ -37,6 +37,9 @@ export default async function MyProjectsPage() {
         category: true,
         location: true,
 
+        viewCount: true,
+        clickCount: true,
+
         createdAt: true,
 
         user: {
@@ -56,6 +59,7 @@ export default async function MyProjectsPage() {
           select: {
             pings: true,
             applications: true,
+            savedProjects: true,
           },
         },
 

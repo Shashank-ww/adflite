@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  X,
-  FileText,
-} from "lucide-react";
+import { X, Download } from "lucide-react";
 
 type Props = {
   url: string;
@@ -15,17 +12,22 @@ export default function ResumeViewer({
   url,
 }: Props) {
 
-   const [open, setOpen] =
+  const [open, setOpen] =
     useState(false);
 
-  // ESC CLOSE
+  const [loading, setLoading] =
+    useState(true);
+
   useEffect(() => {
+
     const handleKeyDown = (
       e: KeyboardEvent
     ) => {
+
       if (e.key === "Escape") {
         setOpen(false);
       }
+
     };
 
     if (open) {
@@ -41,6 +43,7 @@ export default function ResumeViewer({
         handleKeyDown
       );
     };
+
   }, [open]);
 
   return (
@@ -51,37 +54,45 @@ export default function ResumeViewer({
           setOpen(true)
         }
         className="
-          inline-flex
-          items-center
-          gap-1
-          text-blue-600
-          underline
+          border border-gray-300
+          px-3 py-2
+          text-xs
+          hover:bg-gray-50
         "
       >
-        <FileText size={14} />
-        view resume
+        View Resume
       </button>
 
       {open && (
+
         <div
           className="
             fixed inset-0 z-50
             flex items-center justify-center
             bg-black/70
-            p-0
+            p-4
           "
+          onClick={() =>
+            setOpen(false)
+          }
         >
+
           <div
+            onClick={(e) =>
+              e.stopPropagation()
+            }
             className="
               flex flex-col
-              h-screen
+              h-[92vh]
               w-full
               max-w-6xl
               overflow-hidden
-              rounded-md
+              rounded-lg
               bg-white
+              shadow-xl
             "
           >
+
             {/* HEADER */}
 
             <div
@@ -92,36 +103,91 @@ export default function ResumeViewer({
                 px-4 py-3
               "
             >
+
               <span className="text-sm font-medium">
                 Resume Preview
               </span>
 
-              <button
-                type="button"
-                onClick={() =>
-                  setOpen(false)
-                }
-              >
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-2">
+
+                <a
+                  href={url}
+                  download
+                  className="
+                    inline-flex
+                    items-center
+                    gap-1
+                    border
+                    border-gray-300
+                    px-3 py-1.5
+                    text-xs
+                    hover:bg-gray-50
+                  "
+                >
+                  <Download
+                    size={14}
+                  />
+                  Download
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOpen(false)
+                  }
+                  className="
+                    rounded
+                    p-1
+                    hover:bg-gray-100
+                  "
+                >
+                  <X size={18} />
+                </button>
+
+              </div>
+
             </div>
 
             {/* PDF */}
 
-            <div className="flex-1 min-h-0 border-4 border-red-500">
+            <div className="relative flex-1 min-h-0">
+
+              {loading && (
+                <div
+                  className="
+                    absolute inset-0
+                    flex items-center
+                    justify-center
+                    bg-white
+                    text-sm
+                    text-gray-500
+                  "
+                >
+                  Loading resume...
+                </div>
+              )}
+
               <iframe
-                src={url}
+                src={`${url}#view=FitH`}
                 title="Resume"
+                onLoad={() =>
+                  setLoading(false)
+                }
                 className="
                   h-full
                   w-full
                   border-0
                 "
               />
+
             </div>
+
           </div>
+
         </div>
+
       )}
+
     </>
   );
 }
