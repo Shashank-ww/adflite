@@ -100,34 +100,48 @@ export default async function MessagesPage({
 
   /* UNIQUE CONVERSATIONS */
 
-  const uniqueUsers =
-    Array.from(
-      new Map(
-        conversations.map((msg) => {
+const conversationMap =
+  new Map();
 
-          const otherUser =
-            msg.senderId ===
-            currentUser.id
-              ? msg.receiver
-              : msg.sender;
+for (const msg of conversations) {
 
-          return [
-            otherUser.id,
-            {
-              ...otherUser,
+  const otherUser =
+    msg.senderId === currentUser.id
+      ? msg.receiver
+      : msg.sender;
 
-              lastMessage:
-                msg.text,
+  if (
+    !conversationMap.has(
+      otherUser.id
+    )
+  ) {
+    conversationMap.set(
+      otherUser.id,
+      {
+        ...otherUser,
 
-              unread:
-                msg.receiverId ===
-                  currentUser.id &&
-                !msg.seen,
-            },
-          ];
-        })
-      ).values()
+        lastMessage:
+          msg.senderId ===
+          currentUser.id
+            ? `You: ${msg.text}`
+            : msg.text,
+
+        lastMessageAt:
+          msg.createdAt,
+
+        unread:
+          msg.receiverId ===
+            currentUser.id &&
+          !msg.seen,
+      }
     );
+  }
+}
+
+const uniqueUsers =
+  Array.from(
+    conversationMap.values()
+  );
 
   /* CURRENT THREAD */
 
@@ -172,11 +186,17 @@ export default async function MessagesPage({
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
 
-      <div className="grid min-h-[82vh] overflow-hidden border border-gray-300 bg-white md:grid-cols-[280px_1fr]">
+      <div className="grid h-[calc(100vh-120px)] min-h-0 overflow-hidden border border-gray-300 bg-white md:grid-cols-[280px_1fr]">
 
         {/* SIDEBAR */}
 
-        <aside className="border-r border-gray-300 bg-white">
+        <aside
+            className={`border-r border-gray-300 bg-white ${
+              receiverId
+                ? "hidden md:block"
+                : "block"
+            }`}
+          >
 
           <div className="border-b border-gray-300 px-4 py-4">
 
@@ -211,25 +231,28 @@ export default async function MessagesPage({
 
                       <div className="min-w-0 flex-1">
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-start justify-between gap-2">
 
-                          <p
-                            className={`truncate text-sm ${
-                              active
-                                ? "font-bold"
-                                : "font-medium"
-                            }`}
-                          >
+                          <div className="flex-1">
 
+                            <p
+                              className={`truncate text-sm ${
+                                active
+                                  ? "font-bold"
+                                  : "font-medium"
+                              }`}
+                            >
                             {user.name ||
                               "anonymous"}
 
-                          </p>
+                            </p>
+                          </div>
 
-                          {user.unread &&
-                            !active && (
-                              <span className="h-2 w-2 rounded-full bg-black" />
-                            )}
+                          <span className="text-[11px] text-gray-400">
+                            {new Date(
+                              user.lastMessageAt
+                            ).toLocaleDateString()}
+                          </span>
 
                         </div>
 
@@ -265,13 +288,25 @@ export default async function MessagesPage({
 
         {/* CHAT */}
 
-        <section className="flex max-h-[82vh] flex-col bg-gray-50">
+        <section
+          className={`flex min-h-0 h-full flex-col bg-gray-50${
+            !receiverId
+              ? "hidden md:flex"
+              : "flex"
+          }`}
+        >
 
           <div className="border-b border-gray-300 bg-white px-5 py-4">
 
             {activeUser ? (
 
               <div>
+                <Link
+                  href="/messages"
+                  className="mb-2 block text-sm text-gray-500 md:hidden"
+                >
+                  ← Back to inbox
+                </Link>
 
                 <h2 className="font-semibold">
 
@@ -281,7 +316,7 @@ export default async function MessagesPage({
 
                 <p className="mt-1 text-xs text-gray-500">
 
-                  direct conversation
+                  active conversation
 
                 </p>
 

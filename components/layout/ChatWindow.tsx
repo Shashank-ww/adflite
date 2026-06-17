@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { sendMessage } from "@/actions/messageActions";
 
@@ -35,6 +35,18 @@ export default function ChatWindow({
 
   const [sending, setSending] =
     useState(false);
+
+    const bottomRef =
+  useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+
+  bottomRef.current
+    ?.scrollIntoView({
+      behavior: "smooth",
+    });
+
+}, [messages]);
 
   function formatTime(date: string | Date) {
   return new Date(date).toLocaleString("en-IN", {
@@ -79,7 +91,7 @@ async function handleSend() {
     <>
       {/* MESSAGES */}
 
-      <div className="flex-1 overflow-y-auto px-4 py-5">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 overscroll-contain">
 
         <div className="flex flex-col gap-4">
 
@@ -145,6 +157,7 @@ async function handleSend() {
 
         </div>
 
+      <div ref={bottomRef} />
       </div>
 
       {/* INPUT */}

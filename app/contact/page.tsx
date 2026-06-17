@@ -134,11 +134,11 @@ export default function ContactPage() {
       <div className="space-y-4 text-lg leading-8 text-[#2d2d28]">
 
         <p>
-          i still remember the first time i realized i was directionless. 
+          do you remember the first time being directionless?
         </p>
 
         <p>
-          not because i lacked ambition. not because i wasn't trying. i simply didn't know where i was supposed to go.
+          not because we lacked ambition. not because we weren't trying. simply because we didn't know where we are supposed to go.
           no one really teaches that.
         </p>
 

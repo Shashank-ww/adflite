@@ -70,13 +70,12 @@ export default async function Sidebar() {
       : null;
 
   return (
-    <aside className="hidden w-64 shrink-0 self-start lg:block">
+    <aside className="hidden w-64 shrink-0 lg:block">
 
       <div
         className="
         sticky top-4
             z-20
-            overflow-y-auto
             border border-gray-300
             bg-white
             rounded-md

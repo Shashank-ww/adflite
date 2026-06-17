@@ -24,10 +24,11 @@ function generateSlug(title: string) {
   );
 }
 
+//// RANDOM TESTING
+
 /* =========================
    CREATE PROJECT
 ========================= */
-
 export async function createProject(
   formData: FormData
 ) {
@@ -35,7 +36,9 @@ export async function createProject(
     await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    throw new Error("Unauthorized");
+    throw new Error(
+      "Please login first."
+    );
   }
 
   const user =
@@ -46,46 +49,82 @@ export async function createProject(
     });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error(
+      "User not found."
+    );
+  }
+
+  const listingCount =
+    await prisma.project.count({
+      where: {
+        userId: user.id,
+      },
+    });
+
+  if (listingCount >= 50) {
+    throw new Error(
+      "Maximum 50 listings allowed."
+    );
   }
 
   const title =
-    formData.get("title") as string;
+    String(
+      formData.get("title") || ""
+    ).trim();
 
-  const slug = generateSlug(title);
+  const description =
+    String(
+      formData.get("description") || ""
+    ).trim();
+
+  if (title.length < 10) {
+    throw new Error(
+      "Title must be at least 10 characters."
+    );
+  }
+
+  if (description.length < 500) {
+    throw new Error(
+      "Description must be at least 50 characters."
+    );
+  }
+
+  const slug =
+    generateSlug(title);
 
   await prisma.project.create({
     data: {
       title,
-
       slug,
+      description,
 
-      description:
-        formData.get(
-          "description"
-        ) as string,
+      budget: String(
+        formData.get("budget") || ""
+      ),
 
-      budget:
-        formData.get("budget") as string,
+      timeline: String(
+        formData.get("timeline") || ""
+      ),
 
-      timeline:
-        formData.get("timeline") as string,
+      category: String(
+        formData.get("category") || ""
+      ),
 
-      category:
-        formData.get("category") as string,
-
-      location:
-        formData.get("location") as string,
+      location: String(
+        formData.get("location") || ""
+      ),
 
       userId: user.id,
     },
   });
 
   revalidatePath("/");
+  revalidatePath("/projects");
 
-  redirect("/");
+  redirect(
+    `/projects/${slug}`
+  );
 }
-
 
 /* =========================
    SAVE PROJECT

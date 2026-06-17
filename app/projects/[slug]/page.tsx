@@ -190,7 +190,7 @@ project.viewCount += 1;
           href="/"
           className="text-gray-600 hover:underline"
         >
-          ← back
+          ← back home
         </Link>
 
         {autoOpenApply &&
