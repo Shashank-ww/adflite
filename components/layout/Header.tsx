@@ -197,7 +197,7 @@ const links = [
                   </div>
                 )}
 
-                <span className="max-w-28 truncate text-gray-700">
+                <span className="max-w-fit truncate text-gray-700">
 
                   {session.user.name}
 

@@ -354,7 +354,7 @@ const uniqueUsers =
               initialMessages={
                 messages
               }
-              projectId={projectId}
+              projectSlug={projectId}
             />
 
           ) : (

@@ -86,7 +86,7 @@ export default async function Sidebar() {
 
 {user ? (
 
-  <div className="border-b border-gray-200 bg-stone-50 p-4">
+  <div className="border-b border-gray-200 bg-stone-50 p-4 rounded-t-md">
 
     {/* TOP */}
 

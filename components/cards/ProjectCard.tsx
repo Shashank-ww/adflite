@@ -677,7 +677,7 @@ async function handleProjectClick() {
                       </span>
 
                       <Link
-                        href={`/messages?user=${project.user.id}`}
+                        href={`/messages?user=${project.user.id}&project=${project.slug}`}
                         className="
                           text-gray-600
                           hover:underline

@@ -17,14 +17,14 @@ type Props = {
   currentUserId: string;
   receiverId: string;
   initialMessages: Message[];
-  projectId?: string;
+  projectSlug?: string;
 };
 
 export default function ChatWindow({
   currentUserId,
   receiverId,
   initialMessages,
-  projectId,
+  projectSlug,
 }: Props) {
 
   const [messages, setMessages] =
@@ -74,7 +74,7 @@ async function handleSend() {
       await sendMessage(
         receiverId,
         messageText,
-        projectId
+        projectSlug
       );
 
     setMessages((prev) => [

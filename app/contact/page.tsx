@@ -85,7 +85,6 @@ export default function ContactPage() {
     bg-[#f8f6ee]
   "
 >
-
     {/* SPIRAL HOLES */}
 
     <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center justify-around border-r border-[#d8d8cf] bg-[#f3f1e8]">
@@ -124,7 +123,7 @@ export default function ContactPage() {
         </p>
 
         <h2 className="text-3xl font-semibold leading-tight text-[#1f1f1b]">
-          why switchwaters exists
+          why switchwaters exist
         </h2>
 
       </div>
@@ -143,7 +142,7 @@ export default function ContactPage() {
         </p>
 
         <p>
-          not our teachers. not degree. not the people telling you what success is supposed to look like.
+          not our teachers. not degree. not the people. no one tells you what success is supposed to look like.
         </p>
 
         <p className="font-bold">
@@ -152,30 +151,30 @@ export default function ContactPage() {
         </p>
 
         <p>
-          years ago, when i dropped out of engineering, it felt like failure.
+          years ago, when i dropped out of engineering, it felt like a failure.
           i realised the degree was not the destination,
-          landing that first internship was not the plan,
+          landing that first internship in big 4 was not the plan.
         </p>
 
         <p>
-          the “career ladder” was mostly a story repeated so often
-          that everyone accepted it as truth.
+          the “career ladder” was just a story repeated so often
+          that everyone believed it as truth. but it isn't.
           i learnt this the hard way.
         </p>
 
         <p>
           people graduate without direction.
-          people switch careers without guidance.
-          people spend years in jobs wondering if they're building a life they actually want.
+          switch careers without guidance.
+          spend years in jobs wondering if they're building a life they actually want.
         </p>
 
         <p>
-          and nobody really prepares you for that feeling.
+          and nobody really prepares you for that.
         </p>
 
         <p>
-          schools prepare people to pass.
-          corporates prepare people to produce.
+          schools prepare you to pass.
+          corporates prepare you to produce.
           they trust you after a degree is because that proves your stability at one place.
         </p>
 
@@ -202,18 +201,18 @@ export default function ContactPage() {
 
         <p>
           a place where opportunities move like currents,
-          industries like jungles, 
+          industries conduct as jungles, 
           where hidden paths matter,
           and people more than their resumes.
         </p>
 
-        <p>
+        <p className="font-bold">
           switchwaters is being built openly,
-          honestly, and continuously with the people using it.
+          honestly, and continuously with the people.
         </p>
 
         <p>
-          if you share the same thoughts, you are at the right place!
+          if you share the same thought, you are at the right place!
         </p>
 
           welcome to the switchwaters habitat.
@@ -224,9 +223,9 @@ export default function ContactPage() {
           <div className="inline-block border-t border-[#c8c5b7] pt-4">
 
             <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
-              — Shashank Srivastava
+              — Shashank Krishna
             </p>
-            <p className="text-sm text-gray-500 ml-6">founder ceo</p>
+            <p className="text-sm text-gray-500 ml-6">founder, ceo</p>
 
             <Link
               href="/"
@@ -351,7 +350,7 @@ export default function ContactPage() {
                 hover:bg-white
               "
             >
-              send debug
+              send debug report
             </a>
 
           </div>

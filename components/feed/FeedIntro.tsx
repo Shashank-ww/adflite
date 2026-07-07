@@ -112,7 +112,7 @@ export default async function FeedIntro() {
             "
           >
 
-            a habitat for marketers, operators, creators, freelancers and teams navigating careers.
+            a space for marketers, operators, creators, freelancers and teams navigating careers.
 
           </p>
 
